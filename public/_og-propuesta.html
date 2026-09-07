@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1200px; height:630px; background:#0D0D0D; color:#F2F2F2;
+         font-family:'Space Grotesk',sans-serif; overflow:hidden; position:relative; }
+
+  .claqueta { position:absolute; top:0; left:0; right:0; height:12px; z-index:6;
+              background:repeating-linear-gradient(90deg,#C6FF00 0 28px,#1E1E1E 28px 56px); }
+  .rail { position:absolute; bottom:0; left:0; right:0; height:4px; background:#C6FF00; z-index:6; }
+
+  /* faint grid, fading toward the left so the copy sits on flat ink */
+  .grid { position:absolute; inset:12px 0 4px; z-index:1; opacity:.08;
+          background-image:linear-gradient(to right,#F2F2F2 1px,transparent 1px),
+                           linear-gradient(to bottom,#F2F2F2 1px,transparent 1px);
+          background-size:72px 72px;
+          -webkit-mask-image:radial-gradient(ellipse at 78% 55%, #000 25%, transparent 72%); }
+  .glow { position:absolute; right:-160px; bottom:-260px; width:720px; height:720px; border-radius:50%; z-index:1;
+          background:radial-gradient(circle, rgba(198,255,0,.20), transparent 62%); }
+
+  /* ghost word behind everything */
+  .ghost { position:absolute; left:-20px; bottom:34px; z-index:1; font-family:'Archivo Black',sans-serif;
+           font-size:250px; line-height:1; letter-spacing:-.03em; white-space:nowrap;
+           color:transparent; -webkit-text-stroke:1px rgba(242,242,242,.09); }
+
+  /* viewfinder */
+  .vf { position:absolute; inset:40px 36px 30px; z-index:5; pointer-events:none; }
+  .vf i { position:absolute; width:30px; height:30px; border:1.5px solid rgba(242,242,242,.55); }
+  .vf i:nth-child(1){ left:0; top:0; border-right:0; border-bottom:0; }
+  .vf i:nth-child(2){ right:0; top:0; border-left:0; border-bottom:0; }
+  .vf i:nth-child(3){ left:0; bottom:0; border-right:0; border-top:0; }
+  .vf i:nth-child(4){ right:0; bottom:0; border-left:0; border-top:0; }
+  .hud { position:absolute; font-size:11.5px; letter-spacing:.24em; text-transform:uppercase; font-weight:500;
+         color:rgba(242,242,242,.7); display:flex; align-items:center; gap:10px; }
+  .hud.tl { left:46px; top:2px; } .hud.tr { right:46px; top:2px; color:rgba(242,242,242,.5); }
+  .hud.bl { left:46px; bottom:2px; color:rgba(242,242,242,.5); } .hud.br { right:46px; bottom:2px; color:#C6FF00; }
+  .dot { width:9px; height:9px; border-radius:50%; background:#C6FF00; display:block; flex:none; }
+  .meter { display:flex; align-items:flex-end; gap:3px; height:11px; }
+  .meter b { display:block; width:3px; background:#C6FF00; }
+
+  .content { position:absolute; top:12px; bottom:4px; left:0; width:640px; z-index:4;
+             padding:88px 0 70px 76px; display:flex; flex-direction:column; justify-content:space-between; }
+  .eyebrow { display:flex; align-items:center; gap:11px; font-size:12.5px; letter-spacing:.24em;
+             text-transform:uppercase; font-weight:500; }
+  .eyebrow b { color:#C6FF00; font-weight:500; } .eyebrow i { width:26px; height:1px; background:#2A2A2A; display:block; }
+  .eyebrow span { color:#8A8A8A; }
+
+  h1 { font-family:'Archivo Black',sans-serif; font-size:56px; line-height:1.0; letter-spacing:-.032em;
+       margin-top:26px; max-width:11ch; }
+  h1 em { font-style:normal; color:#C6FF00; }
+
+  .mark { display:flex; align-items:center; gap:12px; font-family:'Archivo Black',sans-serif;
+          font-size:30px; line-height:1; letter-spacing:-.02em; }
+  .mark .dot { width:11px; height:11px; }
+  .mark small { font-family:'Space Grotesk',sans-serif; font-size:12px; letter-spacing:.22em;
+                text-transform:uppercase; color:#6E6E6E; font-weight:500; margin-left:6px; }
+
+  /* data panel, right */
+  .panel { position:absolute; right:76px; top:110px; width:430px; z-index:4; }
+  .panel svg { width:430px; height:230px; display:block; }
+  .kpis { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; margin-top:22px; border-top:1px solid #262626; }
+  .kpi { padding-top:16px; position:relative; }
+  .kpi::before { content:""; position:absolute; left:0; top:-1px; height:2px; width:44px; background:#C6FF00; }
+  .kpi .n { font-family:'Archivo Black',sans-serif; font-size:44px; line-height:1; color:#C6FF00; letter-spacing:-.03em; }
+  .kpi .l { font-size:13px; color:#BDBDBD; margin-top:8px; line-height:1.3; }
+  .kpi .s { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#6E6E6E; margin-top:4px; }
+</style>
+</head>
+<body>
+  <div class="claqueta"></div>
+  <div class="grid"></div>
+  <div class="glow"></div>
+  <div class="ghost">NATIVOS</div>
+
+  <div class="vf">
+    <i></i><i></i><i></i><i></i>
+    <div class="hud tl"><span class="dot"></span>REC&nbsp; 00:00:12:07</div>
+    <div class="hud tr">A-CAM · 4K · 24 fps <span class="meter"><b style="height:50%"></b><b style="height:90%"></b><b style="height:65%"></b><b style="height:100%"></b><b style="height:55%"></b></span></div>
+    <div class="hud bl">Preparada para Nativos para Nativos · Ref KDR—NPN—001</div>
+    <div class="hud br">1 día de grabación = 1 mes de contenido</div>
+  </div>
+
+  <div class="content">
+    <div>
+      <div class="eyebrow"><b>Propuesta de contenido</b><i></i><span>Bogotá</span></div>
+      <h1>Nativos para Nativos se ve mejor de lo que <em>se ve en Instagram.</em></h1>
+    </div>
+    <div class="mark"><span class="dot"></span>KUADRA<small>Film · kuadrafilm.com</small></div>
+  </div>
+
+  <div class="panel">
+    <!-- Bambú launch curve: 30 days of views, publish days marked -->
+    <svg viewBox="0 0 430 230" fill="none">
+      <defs>
+        <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#C6FF00" stop-opacity=".34"/>
+          <stop offset="1" stop-color="#C6FF00" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <g stroke="#262626" stroke-width="1">
+        <line x1="0" y1="10" x2="430" y2="10"/><line x1="0" y1="62" x2="430" y2="62"/>
+        <line x1="0" y1="114" x2="430" y2="114"/><line x1="0" y1="166" x2="430" y2="166"/><line x1="0" y1="218" x2="430" y2="218"/>
+      </g>
+      <path id="curve" d="M0,128 C14,140 26,168 42,178 C58,188 70,196 86,200 C100,204 108,206 118,206 C128,206 140,178 150,170 C160,162 168,172 178,184 C188,196 196,202 206,204 C214,206 220,200 226,180 C232,160 240,60 250,34 C258,14 262,22 268,50 C276,90 282,140 292,170 C300,194 306,200 318,204 C328,207 336,196 344,184 C352,172 358,170 368,176 C378,182 386,198 396,204 C406,208 416,196 430,180"/>
+      <use href="#curve" stroke="#C6FF00" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M0,128 C14,140 26,168 42,178 C58,188 70,196 86,200 C100,204 108,206 118,206 C128,206 140,178 150,170 C160,162 168,172 178,184 C188,196 196,202 206,204 C214,206 220,200 226,180 C232,160 240,60 250,34 C258,14 262,22 268,50 C276,90 282,140 292,170 C300,194 306,200 318,204 C328,207 336,196 344,184 C352,172 358,170 368,176 C378,182 386,198 396,204 C406,208 416,196 430,180 L430,218 L0,218 Z" fill="url(#g)"/>
+      <path d="M0,214 C60,200 120,178 180,150 C220,130 240,112 262,90 C300,60 360,44 430,36" stroke="#F2F2F2" stroke-width="1.6" stroke-dasharray="5 5" opacity=".7"/>
+      <g fill="#C6FF00" stroke="#0D0D0D" stroke-width="3">
+        <circle cx="0" cy="128" r="6"/><circle cx="150" cy="170" r="6"/><circle cx="250" cy="34" r="6"/><circle cx="368" cy="176" r="6"/>
+      </g>
+      <text x="250" y="18" text-anchor="middle" fill="#C6FF00" font-family="Archivo Black" font-size="12">100K+ · un solo reel</text>
+    </svg>
+
+    <div class="kpis">
+      <div class="kpi"><div class="n">192K</div><div class="l">vistas en 30 días</div><div class="s">Bambú Coliving · Instagram</div></div>
+      <div class="kpi"><div class="n">+3.419</div><div class="l">seguidores desde cero</div><div class="s">Primer mes · 1 rodaje</div></div>
+    </div>
+  </div>
+
+  <div class="rail"></div>
+</body>
+</html>

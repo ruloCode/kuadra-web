@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Kuadra brand tokens ───────────────────────────── */
+  --color-ink: #0D0D0D;        /* negro rec — fondo dominante */
+  --color-carbon: #131313;     /* superficie elevada */
+  --color-line: #1E1E1E;       /* bordes / hairlines */
+  --color-volt: #C6FF00;       /* verde volt — acento único */
+  --color-volt-dim: #8FB800;
+  --color-smoke: #F2F2F2;      /* blanco humo — texto */
+  --color-signal: #6E6E6E;     /* gris señal — secundario */
+
+  --font-display: var(--font-archivo-black), "Arial Black", system-ui, sans-serif;
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  * { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
+  /* Stacking offsets for the Proceso cards — tighter on phones. */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --proceso-pin: 72px;
+    --proceso-step: 12px;
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --proceso-pin: 88px;
+      --proceso-step: 22px;
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* Lenis owns scrolling */
+  }
+
+  body {
+    background: var(--color-ink);
+    color: var(--color-smoke);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02", "cv01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--color-volt); color: var(--color-ink); }
+
+  /* Scrollbar — thin, brand-coloured */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-ink); }
+  ::-webkit-scrollbar-thumb { background: var(--color-line); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-volt-dim); }
+
+  :focus-visible {
+    outline: 2px solid var(--color-volt);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Display type — Archivo Black, tight and loud */
+  .u-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+  /* Technical label — wide-tracked uppercase, the "camera UI" voice */
+  .u-label {
+    font-size: clamp(10px, 0.72vw, 11px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .u-tabular { font-variant-numeric: tabular-nums; }
+
+  .u-gutter { padding-inline: clamp(20px, 5vw, 80px); }
+  .u-rule { border-top: 1px solid var(--color-line); }
+
+  /* Grain overlay — filmic texture, sits above everything */
+  .u-grain::after {
+    content: "";
+    position: fixed;
+    inset: -50%;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 6s steps(6) infinite;
+  }
+}
+
+/* ── Keyframes ─────────────────────────────────────── */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4%, -4%); }
+  30% { transform: translate(3%, -2%); }
+  50% { transform: translate(-2%, 3%); }
+  70% { transform: translate(4%, 2%); }
+  90% { transform: translate(-3%, 1%); }
+}
+
+/* Punto rec — the brand signature, blinks like a recording camera */
+@keyframes rec-blink {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0.18; }
+}
+.u-rec {
+  animation: rec-blink 1.6s steps(1, end) infinite;
+}
+
+@keyframes marquee-x {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-rec, .u-grain::after { animation: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
