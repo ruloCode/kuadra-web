@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Archivo_Black, Space_Grotesk } from 'next/font/google'
 import './globals.css'
-import SmoothScroll from '@/components/SmoothScroll'
-import Preloader from '@/components/Preloader'
 
 const archivoBlack = Archivo_Black({
   weight: '400',
@@ -18,43 +16,15 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
 })
 
-const SITE = 'https://www.kuadrafilm.com'
-
+/**
+ * Raíz común al sitio público y al panel interno. Sólo pone el documento y las
+ * tipografías: cada zona monta su propio chrome en su layout.
+ *
+ *   app/(site)  → kuadrafilm.com — landing, portafolio y propuestas
+ *   app/os      → el panel, detrás de login
+ */
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE),
-  title: {
-    default: 'Kuadra Film — Productora audiovisual en Bogotá',
-    template: '%s · Kuadra Film',
-  },
-  description:
-    'Productora audiovisual en Bogotá. Fotografía comercial, video, dirección de arte y post para marcas. De tu cuadra, cuadro a cuadro.',
-  keywords: [
-    'productora audiovisual Bogotá',
-    'fotografía comercial Colombia',
-    'video para marcas',
-    'fotografía de producto',
-    'dirección de arte',
-    'Kuadra Film',
-  ],
-  authors: [{ name: 'Kuadra Film' }],
-  openGraph: {
-    type: 'website',
-    locale: 'es_CO',
-    url: SITE,
-    siteName: 'Kuadra Film',
-    title: 'Kuadra Film — Productora audiovisual en Bogotá',
-    description:
-      'Fotografía comercial, video, dirección de arte y post para marcas. De tu cuadra, cuadro a cuadro.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Kuadra Film — Productora audiovisual en Bogotá',
-    description: 'Fotografía comercial, video, dirección de arte y post para marcas.',
-  },
-  icons: {
-    icon: '/brand/kuadra-isotipo.svg',
-    apple: '/brand/kuadra-isotipo.svg',
-  },
+  metadataBase: new URL('https://www.kuadrafilm.com'),
 }
 
 export const viewport: Viewport = {
@@ -62,13 +32,10 @@ export const viewport: Viewport = {
   colorScheme: 'dark',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="es-CO" className={`${archivoBlack.variable} ${spaceGrotesk.variable}`}>
-      <body className="u-grain antialiased">
-        <Preloader />
-        <SmoothScroll>{children}</SmoothScroll>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   )
 }

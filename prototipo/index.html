@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kuadra OS — Prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--negro:#0D0D0D;--volt:#C6FF00;--humo:#F2F2F2;--gris:#6E6E6E;--carbon:#161616;--panel:#1C1C1C;--linea:#2A2A2A;--rojo:#FF5A5A;--ambar:#FFC145;--head:'Archivo Black',sans-serif;--body:'Space Grotesk',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--negro);color:var(--humo);font-family:var(--body);font-size:14px;line-height:1.5;height:100vh;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.hd{font-family:var(--head);letter-spacing:-.01em}
+.rec{width:10px;height:10px;border-radius:50%;background:var(--volt);display:inline-block;animation:rec 1.6s infinite}
+@keyframes rec{0%,100%{opacity:1}50%{opacity:.25}}
+.claketa{display:flex;height:8px}.claketa i{flex:1}.claketa i:nth-child(odd){background:var(--volt)}.claketa i:nth-child(even){background:#2A2A2A}
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem .95rem;border-radius:4px;font-weight:700;border:1.5px solid var(--volt);color:var(--volt);transition:.15s;white-space:nowrap}
+.btn:hover{background:var(--volt);color:var(--negro)}
+.btn.solid{background:var(--volt);color:var(--negro)}.btn.solid:hover{background:#d9ff3d}
+.btn.ghost{border-color:var(--linea);color:#CFCFCF}.btn.ghost:hover{border-color:#CFCFCF;background:transparent;color:#fff}
+.btn.danger{border-color:var(--rojo);color:var(--rojo)}.btn.danger:hover{background:var(--rojo);color:#fff}
+.btn.sm{padding:.35rem .65rem;font-size:.8rem}
+.tag{display:inline-block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:.15rem .5rem;border-radius:3px;font-weight:700}
+.tag.ig{background:#3a2440;color:#f0a0ff}.tag.tt{background:#1f3a3a;color:#8ff5ee}.tag.both{background:#2d2d2d;color:#ddd}
+.st{display:inline-block;padding:.15rem .55rem;border-radius:3px;font-size:.72rem;font-weight:700}
+.st.grabar{background:#2a2a2a;color:#bbb}.st.editar{background:#3b3419;color:var(--ambar)}.st.revision{background:#1e2e45;color:#7fb8ff}.st.cambios{background:#4a1f1f;color:var(--rojo)}.st.aprobado{background:#233d0f;color:var(--volt)}.st.publicado{background:var(--volt);color:var(--negro)}
+input,select,textarea{background:var(--carbon);border:1px solid var(--linea);border-radius:4px;padding:.55rem .7rem;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--volt)}
+textarea{resize:vertical;min-height:90px}
+label{display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:#8C8C8C;margin:.7rem 0 .3rem}
+.hidden{display:none!important}
+.muted{color:#8C8C8C}
+
+/* login */
+#login{height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 80% 20%,rgba(198,255,0,.12),transparent 45%)}
+.login-card{width:min(420px,92vw);background:var(--carbon);border:1px solid var(--linea);padding:2.2rem}
+.login-card .hd{font-size:2rem;display:flex;align-items:center;gap:.6rem}
+.who{display:grid;gap:.5rem;margin-top:1.2rem}
+.who button{text-align:left;padding:.8rem .9rem;border:1px solid var(--linea);border-radius:4px;background:var(--negro);transition:.15s}
+.who button:hover{border-color:var(--volt)}
+.who b{display:block}.who span{font-size:.8rem;color:#8C8C8C}
+
+/* shell */
+#app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+.top{display:flex;align-items:center;gap:1rem;padding:.6rem 1.2rem;border-bottom:1px solid var(--linea);background:var(--carbon)}
+.top .logo{display:flex;align-items:center;gap:.5rem;font-family:var(--head);font-size:1.15rem}
+.top select{width:auto;min-width:200px;padding:.4rem .6rem}
+.top .sp{flex:1}
+.me{font-size:.8rem;color:#BDBDBD;text-align:right;line-height:1.2}
+.me b{color:#fff;display:block}
+.body{display:grid;grid-template-columns:220px 1fr;min-height:0}
+.body.client{grid-template-columns:1fr}
+.side{border-right:1px solid var(--linea);padding:1rem .7rem;display:flex;flex-direction:column;gap:.2rem}
+.side button{text-align:left;padding:.6rem .8rem;border-radius:4px;color:#BDBDBD;display:flex;justify-content:space-between;align-items:center}
+.side button:hover{background:var(--carbon);color:#fff}
+.side button.on{background:var(--volt);color:var(--negro);font-weight:700}
+.side .cnt{font-size:.7rem;background:rgba(0,0,0,.25);padding:0 .4rem;border-radius:10px}
+.side button.on .cnt{background:rgba(0,0,0,.2)}
+.side .foot{margin-top:auto;font-size:.72rem;color:#666;padding:.5rem .8rem}
+main{overflow:auto;padding:1.4rem 1.6rem}
+.vh{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.vh h1{font-family:var(--head);font-size:1.6rem}
+.vh .k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#8C8C8C;display:flex;gap:.5rem;align-items:center;margin-bottom:.3rem}
+
+/* calendar */
+.cal-nav{display:flex;gap:.5rem;align-items:center}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--linea);border:1px solid var(--linea)}
+.cal .dow{background:var(--carbon);padding:.5rem;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:#8C8C8C;text-align:center}
+.day{background:var(--negro);min-height:108px;padding:.4rem .5rem;position:relative;transition:.15s}
+.day.other{opacity:.35}.day.today{outline:2px solid var(--volt);outline-offset:-2px}
+.day:hover{background:var(--carbon)}
+.day .n{font-family:var(--head);font-size:.85rem;color:#BDBDBD}
+.day.drop{background:#1f2a08}
+.chip{display:flex;align-items:center;gap:.35rem;margin-top:.3rem;padding:.3rem .45rem;border-radius:3px;background:var(--carbon);border-left:3px solid var(--gris);font-size:.74rem;cursor:pointer;line-height:1.25;transition:.15s}
+.chip:hover{background:#262626}
+.chip.grabar{border-color:#666}.chip.editar{border-color:var(--ambar)}.chip.revision{border-color:#7fb8ff}.chip.cambios{border-color:var(--rojo)}.chip.aprobado{border-color:var(--volt)}.chip.publicado{border-color:var(--volt);background:#1f2a08}
+.chip .ic{font-size:.65rem;opacity:.8}
+.chip.client{border-color:var(--volt);font-size:.8rem;padding:.45rem .55rem}
+.chip.client.publicado{opacity:.55;text-decoration:line-through}
+.add-day{position:absolute;right:.35rem;top:.35rem;opacity:0;font-size:.9rem;color:var(--volt)}
+.day:hover .add-day{opacity:1}
+
+/* drawer */
+#drawer{position:fixed;top:0;right:0;height:100vh;width:min(520px,100vw);background:var(--carbon);border-left:1px solid var(--linea);transform:translateX(100%);transition:transform .25s;z-index:40;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#drawer .dh{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid var(--linea)}
+#drawer .db{overflow:auto;padding:1.2rem;flex:1}
+.prev{aspect-ratio:9/16;max-height:420px;width:100%;background:var(--negro);border:1px solid var(--linea);display:grid;place-items:center;color:#666;text-align:center;padding:1rem;font-size:.85rem;overflow:hidden}
+.prev iframe,.prev video,.prev img{width:100%;height:100%;border:0;object-fit:contain}
+.copybox{background:var(--negro);border:1px solid var(--linea);padding:.9rem;border-radius:4px;white-space:pre-wrap;font-size:.92rem;position:relative}
+.copybox .cp{position:absolute;top:.5rem;right:.5rem}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1rem;font-size:.85rem;margin:.8rem 0}
+.meta b{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#8C8C8C}
+.hist{border-left:2px solid var(--linea);margin:.8rem 0 0 .4rem;padding-left:1rem;display:grid;gap:.6rem;font-size:.82rem}
+.hist div{position:relative}.hist div::before{content:"";position:absolute;left:-1.35rem;top:.4rem;width:8px;height:8px;border-radius:50%;background:var(--volt)}
+.hist span{color:#8C8C8C;font-size:.72rem;display:block}
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translate(-50%,20px);background:var(--volt);color:var(--negro);padding:.6rem 1rem;border-radius:4px;font-weight:700;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;opacity:0;pointer-events:none;transition:.25s}
+.overlay.on{opacity:1;pointer-events:auto}
+
+/* board */
+.board{display:grid;grid-template-columns:repeat(6,minmax(190px,1fr));gap:.7rem;min-height:60vh}
+.col{background:var(--carbon);border:1px solid var(--linea);border-radius:4px;padding:.6rem;display:flex;flex-direction:column;gap:.5rem;min-height:200px}
+.col h4{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#BDBDBD;display:flex;justify-content:space-between}
+.col.drop{border-color:var(--volt)}
+.card{background:var(--negro);border:1px solid var(--linea);border-radius:4px;padding:.6rem .7rem;cursor:grab;font-size:.82rem}
+.card:active{cursor:grabbing}
+.card b{display:block;margin-bottom:.2rem}
+.card .m{display:flex;justify-content:space-between;color:#8C8C8C;font-size:.72rem;margin-top:.4rem}
+.card.late{border-color:var(--rojo)}
+
+/* tables & cards */
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:#8C8C8C;padding:.5rem .6rem;border-bottom:1px solid var(--linea)}
+td{padding:.6rem;border-bottom:1px solid var(--linea);vertical-align:top}
+tr.late td:first-child{border-left:3px solid var(--rojo)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.7rem;margin-bottom:1.2rem}
+.stat{background:var(--carbon);border:1px solid var(--linea);padding:.9rem 1rem}
+.stat .n{font-family:var(--head);font-size:1.8rem;color:var(--volt);line-height:1}
+.stat .l{font-size:.78rem;color:#BDBDBD;margin-top:.3rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}.board{grid-template-columns:repeat(6,220px)}.body{grid-template-columns:1fr}.side{display:none}}
+.box{background:var(--carbon);border:1px solid var(--linea);padding:1rem 1.1rem;border-radius:4px}
+.box h3{font-family:var(--head);font-size:1rem;margin-bottom:.6rem}
+.rev-item{display:grid;grid-template-columns:200px 1fr;gap:1rem;background:var(--carbon);border:1px solid var(--linea);padding:1rem;margin-bottom:.8rem;border-radius:4px}
+.rev-item .prev{max-height:300px}
+.warn{background:#3b3419;color:var(--ambar);padding:.5rem .7rem;border-radius:4px;font-size:.8rem;margin:.5rem 0}
+code{background:var(--negro);padding:.1rem .35rem;border-radius:3px;font-size:.8rem}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+.drop-zone{border:2px dashed var(--linea);border-radius:6px;padding:2.2rem 1rem;text-align:center;transition:.15s;cursor:pointer}
+.drop-zone:hover,.drop-zone.over{border-color:var(--volt);background:#151b06}
+.drop-zone .big{font-family:var(--head);font-size:1.1rem;margin-bottom:.3rem}
+.pill{display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;background:var(--negro);border:1px solid var(--linea);color:#BDBDBD;margin-right:.3rem}
+.warnrow{background:#3b3419;color:var(--ambar)}
+.okrow td{border-left:3px solid var(--volt)}
+pre.fmt{background:var(--negro);border:1px solid var(--linea);padding:.8rem;border-radius:4px;font-size:.76rem;overflow:auto;max-height:280px;white-space:pre-wrap;line-height:1.5}
+.chkcell{text-align:center}
+.chkcell input{width:auto}
+.tabs{display:inline-flex;border:1px solid var(--linea);border-radius:4px;overflow:hidden;margin-bottom:1rem}
+.tabs button{padding:.6rem 1.1rem;color:#BDBDBD;font-weight:500;display:flex;gap:.45rem;align-items:center}
+.tabs button.on{background:var(--volt);color:var(--negro);font-weight:700}
+.tabs .cnt{font-size:.7rem;background:rgba(0,0,0,.2);padding:0 .4rem;border-radius:10px}
+.planitem{background:var(--carbon);border:1px solid var(--linea);border-radius:4px;padding:1rem 1.1rem;margin-bottom:.8rem}
+.planitem.ok{border-color:var(--volt)}
+.planitem .gz{background:var(--negro);border:1px solid var(--linea);border-radius:4px;padding:.7rem .8rem;font-size:.84rem;white-space:pre-wrap;max-height:230px;overflow:auto;margin-top:.6rem}
+.shareflag{color:var(--volt);font-size:.7rem}
+.chip .sh{color:var(--volt);font-size:.62rem;margin-left:auto}
+.sec-sep{border-top:1px solid var(--linea);margin:.6rem 0;padding-top:.6rem;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:#666}
+.pl{display:inline-block;padding:.15rem .55rem;border-radius:3px;font-size:.7rem;font-weight:700;white-space:nowrap}
+.pl.nuevo{background:#2a2a2a;color:#bbb}.pl.conversando{background:#1e2e45;color:#7fb8ff}
+.pl.propuesta{background:#3b3419;color:var(--ambar)}.pl.contrato{background:#2d3b19;color:#cfe86a}
+.pl.firmado{background:#233d0f;color:var(--volt)}.pl.activo{background:var(--volt);color:var(--negro)}
+.pl.perdido{background:#4a1f1f;color:var(--rojo)}
+.pl.pagado{background:var(--volt);color:var(--negro)}.pl.pendiente{background:#3b3419;color:var(--ambar)}.pl.vencido{background:#4a1f1f;color:var(--rojo)}
+.mini{font-size:.72rem;color:#8C8C8C;display:block;margin-top:.15rem}
+.mini a{color:#9fd320}
+.crmbar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.crmbar input,.crmbar select{width:auto;min-width:150px}
+.pay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:.5rem;margin-top:.5rem}
+.mcell{border:1px solid var(--linea);border-radius:4px;padding:.5rem;font-size:.75rem;cursor:pointer;transition:.15s;background:var(--negro)}
+.mcell:hover{border-color:var(--volt)}
+.mcell.pagado{border-color:var(--volt);background:#1a2208}
+.mcell.vencido{border-color:var(--rojo)}
+.selcell{width:auto;min-width:150px;padding:.3rem .45rem;font-size:.78rem;font-weight:700;border-radius:3px;cursor:pointer}
+.selcell.nuevo{background:#2a2a2a;color:#bbb;border-color:#3a3a3a}
+.selcell.conversando{background:#1e2e45;color:#7fb8ff;
+.selcell.conversando{border-color:#2c4466}
+.selcell.propuesta{background:#3b3419;color:var(--ambar);border-color:#5a5228}
+.selcell.contrato{background:#2d3b19;color:#cfe86a;border-color:#465c26}
+.selcell.firmado{background:#233d0f;color:var(--volt);border-color:#3a5c1a}
+.selcell.activo{background:var(--volt);color:var(--negro);border-color:var(--volt)}
+.selcell.perdido{background:#4a1f1f;color:var(--rojo);border-color:#6b2c2c}
+.cpbtn{background:none;border:0;color:#8C8C8C;cursor:pointer;font-size:.8rem;padding:0 .2rem;vertical-align:baseline}
+.cpbtn:hover{color:var(--volt)}
+.noname{color:#6E6E6E;font-style:italic}
+.mcell.sinreg{opacity:.5}
+.mcell.sinreg:hover{opacity:1}
+.mcell b{display:block;font-family:var(--head);font-size:.8rem;margin-bottom:.2rem}
+.mcell .v{color:#BDBDBD}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-card">
+    <div class="claketa" style="margin:-2.2rem -2.2rem 1.6rem"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="hd"><span class="rec"></span>KUADRA OS</div>
+    <p class="muted" style="margin-top:.3rem">Prototipo · elige con quién entrar</p>
+    <div class="who" id="who"></div>
+    <p class="muted" style="font-size:.75rem;margin-top:1rem">En la versión real cada persona entra con su correo. Aquí solo se simulan los accesos.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <div class="top">
+    <div class="logo"><span class="rec"></span>KUADRA</div>
+    <select id="clientSel" class="hidden"></select>
+    <button id="asClient" class="btn ghost sm hidden">👁 Ver como cliente</button>
+    <div class="sp"></div>
+    <div class="me" id="me"></div>
+    <button class="btn ghost sm" onclick="logout()">Salir</button>
+  </div>
+  <div class="body" id="body">
+    <aside class="side" id="side"></aside>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<aside id="drawer"><div class="dh"><b class="hd" id="dTitle">Pieza</b><button class="btn ghost sm" onclick="closeDrawer()">✕</button></div><div class="db" id="dBody"></div></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DATOS ================= */
+const STATUS=[['grabar','Por grabar'],['editar','Por editar'],['revision','En revisión'],['cambios','Cambios'],['aprobado','Aprobado'],['publicado','Publicado']];
+const SL=Object.fromEntries(STATUS);
+const CLIENT_VISIBLE=['aprobado','publicado'];
+const USERS=[
+ {id:'u1',name:'Rulo',roles:['admin','estratega','cuentas'],desc:'Admin · estrategia · cuentas'},
+ {id:'u2',name:'Socio',roles:['editor','productor'],desc:'Editor · productor'},
+ {id:'u3',name:'Tercer integrante',roles:['productor'],desc:'Grabación y fotografía'},
+ {id:'c1',name:'Bambú Coliving',roles:['cliente'],clientId:'bambu',desc:'Cliente · solo ve su calendario'},
+ {id:'c2',name:'Clandestine Pizza',roles:['cliente'],clientId:'clan',desc:'Cliente · solo ve su calendario'},
+];
+let S={
+ prospects:[], payments:[],
+ clients:[
+  {id:'bambu',name:'Bambú Coliving',ig:'@bambucoliving',tt:'@bambucoliving',drive:'https://drive.google.com/drive/folders/',pago:'al día'},
+  {id:'clan',name:'Clandestine Pizza',ig:'@clandestinepizza',tt:'@clandestinepizza',drive:'https://drive.google.com/drive/folders/',pago:'al día'},
+  {id:'nativos',name:'Nativos — Gran Plaza Soacha',ig:'@nativos.col',tt:'',drive:'',pago:'pendiente'},
+ ],
+ pieces:[],events:[],seq:1
+};
+const D=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+function seed(){
+ const bam=[[7,'reel','Manifiesto: bienvenido a Bambú','ig'],[9,'reel','Tour del cuarto 3 en 20 segundos','both'],[11,'carrusel','5 razones para vivir en coliving','ig'],[12,'reel','Un día en Bambú (POV)','tt'],[14,'reel','La cocina compartida a las 7 am','both'],[16,'carrusel','Qué incluye tu cuarto','ig'],[18,'reel','Testimonio: Laura, 4 meses aquí','both'],[19,'reel','Puente Aranda desde la terraza','tt'],[21,'reel','Regla #1 de la convivencia','both'],[23,'carrusel','Precios y disponibilidad septiembre','ig'],[25,'reel','Noche de películas','both'],[26,'carrusel','Cómo reservar en 3 pasos','ig']];
+ const st=['publicado','publicado','aprobado','aprobado','aprobado','revision','revision','cambios','editar','editar','grabar','grabar'];
+ bam.forEach((p,i)=>addPiece({clientId:'bambu',date:D(2026,9,p[0]),type:p[1],title:p[2],platform:p[3],status:st[i],time:p[3]==='tt'?'8:00 pm':'6:00 pm',copy:`${p[2]} ✨\n\nVivir en comunidad se siente distinto. Cupos limitados para septiembre — escríbenos por WhatsApp. 🏡`,hashtags:'#coliving #bogota #puentearanda #vivirenbogota',link:'',assignee:i%2?'u2':'u1',due:D(2026,9,Math.max(1,p[0]-3))},true));
+ const cl=[[8,'reel','El corte de la pizza de la casa','both','aprobado'],[10,'carrusel','Menú de temporada','ig','aprobado'],[15,'reel','Detrás del horno','tt','revision'],[17,'reel','Cómo votar por nosotros','both','editar']];
+ cl.forEach(p=>addPiece({clientId:'clan',date:D(2026,9,p[0]),type:p[1],title:p[2],platform:p[3],status:p[4],time:'7:00 pm',copy:`${p[2]} 🍕\n\nHecha a mano, al horno, como siempre. Pide por WhatsApp.`,hashtags:'#pizza #bogota #clandestinepizza',link:'',assignee:'u2',due:D(2026,9,p[0]-2)},true));
+ const plan=[[6,'reel','La terraza a las 6 de la tarde','both','0-3 s | Plano del atardecer desde la terraza | TXT: "6:00 pm"\n3-9 s | Dos personas conversando, cámara en mano | VOZ: el mejor plan del día no cuesta nada\n9-16 s | Detalle de las plantas y las luces | TXT: "Bambú Coliving"\n16-20 s | Cierre con logo y punto rec'],
+  [8,'carrusel','Cuánto cuesta vivir en Bambú','ig','Slide 1: portada con la pregunta\nSlide 2 a 5: qué incluye el precio (servicios, internet, aseo, comunidad)\nSlide 6: comparación honesta con arrendar solo\nSlide 7: CTA a WhatsApp'],
+  [10,'reel','Lo que nadie te cuenta del coliving','tt','0-2 s | A cámara: "nadie te cuenta esto"\n2-12 s | Tres verdades incómodas, una por corte\n12-18 s | Remate honesto + invitación'],
+  [13,'reel','Desayuno de domingo en comunidad','both','0-4 s | Manos partiendo pan, sonido ambiente\n4-12 s | Mesa larga llenándose en timelapse\n12-18 s | Plano abierto del grupo riendo']];
+ plan.forEach(x=>{const np=addPiece({clientId:'bambu',date:D(2026,10,x[0]),type:x[1],title:x[2],platform:x[3],status:'grabar',time:x[3]==='tt'?'8:00 pm':'6:00 pm',copy:'',hashtags:'#coliving #bogota #puentearanda',link:'',guion:x[4],assignee:'u1',due:D(2026,10,Math.max(1,x[0]-4)),planShared:true},true)});
+ S.pieces.filter(p=>p.status==='cambios').forEach(p=>{p.rounds=1;log(p.id,'change_request','Cliente pide cambiar la música y acortar el intro a 2 segundos.','u1')});
+ seedCrm();
+}
+const STAGES=[['nuevo','Por contactar'],['conversando','En conversación'],['propuesta','Propuesta enviada'],['contrato','Contrato enviado'],['firmado','Firmado'],['activo','Cliente activo'],['perdido','No / Perdido']];
+const STL=Object.fromEntries(STAGES);
+function seedCrm(){
+ const P=[
+  ['Nativos — Gran Plaza Soacha','','Encargado del punto','','','@nativos.col','bebidasnativos.co','Soacha','propuesta','Propuesta enviada. Falta el nombre del contacto y saber si maneja uno o varios puntos.','2026-09-10','Confirmar alcance y agendar reunión'],
+  ['Bambú Coliving','','Administración','3001234567','hola@bambucoliving.com','@bambucoliving','bambucoliving.com','Puente Aranda','activo','Cliente desde el lanzamiento de la cuenta.','','Renovación mes 4'],
+  ['Clandestine Pizza','','Dueño','3007654321','','@clandestinepizza','','Bogotá','activo','Un año trabajando. Campaña Pizza Master.','','Propuesta de podcast'],
+ ];
+ P.forEach(x=>S.prospects.push({id:'x'+(S.seq++),company:x[0],contact:x[1],role:x[2],phone:x[3],email:x[4],ig:x[5],web:x[6],city:x[7],stage:x[8],notes:x[9],next:x[10],nextWhat:x[11],clientId:x[0].includes('Bambú')?'bambu':(x[0].includes('Clandestine')?'clan':''),createdAt:'2026-09-01'}));
+ [['bambu','2026-07'],['bambu','2026-08'],['clan','2026-07'],['clan','2026-08']].forEach(([c,m])=>S.payments.push({id:'y'+(S.seq++),clientId:c,month:m,amount:600000,status:'pagado',date:m+'-04',receipt:'',invoice:''}));
+ S.payments.push({id:'y'+(S.seq++),clientId:'bambu',month:'2026-09',amount:600000,status:'pendiente',date:'',receipt:'',invoice:''});
+ S.payments.push({id:'y'+(S.seq++),clientId:'clan',month:'2026-09',amount:800000,status:'pendiente',date:'',receipt:'',invoice:''});
+}
+function pendingPays(){return S.payments.filter(x=>x.status!=='pagado').length}
+function addPiece(p,silent){p.id='p'+(S.seq++);p.rounds=p.rounds||0;S.pieces.push(p);if(!silent)log(p.id,'created','Pieza creada');return p}
+function log(pid,type,text,by){S.events.push({id:'e'+(S.seq++),pid,type,text,by:by||(me&&me.id)||'u1',at:new Date().toISOString()})}
+seed();
+
+/* ================= SESIÓN ================= */
+let me=null, view='cal', curClient='bambu', viewAsClient=false, cal={y:2026,m:9}, clientTab='cal';
+function isClient(){return me.roles.includes('cliente')||viewAsClient}
+function has(r){return me.roles.includes('admin')||me.roles.includes(r)}
+function login(uid){me=USERS.find(u=>u.id===uid);if(me.clientId)curClient=me.clientId;viewAsClient=false;view=isClient()?'cal':'cal';
+ document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');render()}
+function logout(){location.reload()}
+document.getElementById('who').innerHTML=USERS.map(u=>`<button onclick="login('${u.id}')"><b>${u.name}</b><span>${u.desc}</span></button>`).join('');
+
+/* ================= HELPERS ================= */
+const $=s=>document.querySelector(s);
+const client=()=>S.clients.find(c=>c.id===curClient);
+const user=id=>USERS.find(u=>u.id===id)||{name:'—'};
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>{const [y,m,dd]=d.split('-');return `${+dd} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][+m-1]}`};
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function pieces(){let ps=S.pieces.filter(p=>p.clientId===curClient);if(isClient())ps=ps.filter(p=>CLIENT_VISIBLE.includes(p.status));return ps}
+function planPieces(){return S.pieces.filter(p=>p.clientId===curClient&&p.planShared&&!CLIENT_VISIBLE.includes(p.status)).sort((a,b)=>a.date.localeCompare(b.date))}
+function driveId(u){const m=(u||'').match(/\/d\/([\w-]+)|[?&]id=([\w-]+)/);return m?(m[1]||m[2]):null}
+function previewHTML(link){
+ if(!link)return `<div class="prev">Sin archivo aún.<br><span class="muted">Pega el link de Drive en el editor y aquí aparece la previsualización.</span></div>`;
+ const id=driveId(link);
+ if(id)return `<div class="prev"><iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay" loading="lazy"></iframe></div>`;
+ if(/\.(mp4|webm|mov)(\?|$)/i.test(link))return `<div class="prev"><video src="${esc(link)}" controls playsinline></video></div>`;
+ if(/\.(jpe?g|png|webp|gif)(\?|$)/i.test(link))return `<div class="prev"><img src="${esc(link)}" alt=""></div>`;
+ return `<div class="prev">Vista previa no disponible para este link.<br><a class="btn sm" style="margin-top:.6rem" href="${esc(link)}" target="_blank">Abrir ↗</a></div>`;
+}
+function dlLink(link){const id=driveId(link);return id?`https://drive.google.com/uc?export=download&id=${id}`:link}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+async function copy(text,what){try{await navigator.clipboard.writeText(text);toast((what||'Texto')+' copiado ✓')}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast((what||'Texto')+' copiado ✓')}}
+function setStatus(p,st,note){if(p.status===st)return;const from=p.status;p.status=st;log(p.id,'status',`${SL[from]} → ${SL[st]}${note?' · '+note:''}`);if(st==='cambios'){p.rounds=(p.rounds||0)+1}}
+
+/* ================= SHELL ================= */
+function render(){
+ const c=isClient();
+ $('#me').innerHTML=`<b>${me.name}</b>${c?(viewAsClient?'Viendo como cliente':'Cliente'):me.roles.join(' · ')}`;
+ const sel=$('#clientSel');sel.classList.toggle('hidden',me.roles.includes('cliente'));
+ sel.innerHTML=S.clients.map(x=>`<option value="${x.id}" ${x.id===curClient?'selected':''}>${x.name}</option>`).join('');
+ sel.onchange=e=>{curClient=e.target.value;render()};
+ const ac=$('#asClient');ac.classList.toggle('hidden',me.roles.includes('cliente'));ac.textContent=viewAsClient?'← Volver a Kuadra':'👁 Ver como cliente';ac.onclick=()=>{viewAsClient=!viewAsClient;view='cal';render()};
+ $('#body').classList.toggle('client',c);
+ const side=$('#side');
+ if(c){side.innerHTML=''}else{
+  const cnt=st=>S.pieces.filter(p=>p.clientId===curClient&&p.status===st).length;
+  const items=[['cal','📅 Calendario',''],['board','▦ Tablero',''],['review','✓ Sala de revisión',cnt('revision')],['deliver','⏱ Entregas',S.pieces.filter(p=>p.clientId===curClient&&['grabar','editar','cambios'].includes(p.status)).length],['ingest','📄 Importar guion',''],['batch','⇪ Carga por lote','']];
+  const items2=[['crm','◇ Prospectos',S.prospects.filter(x=>!['activo','perdido'].includes(x.stage)).length],['pay','＄ Pagos',pendingPays()],['team','◎ Equipo',''],['backup','⤓ Respaldo','']];
+  const btn=i=>`<button class="${view===i[0]?'on':''}" onclick="view='${i[0]}';render()"><span>${i[1]}</span>${i[2]?`<span class="cnt">${i[2]}</span>`:''}</button>`;
+  side.innerHTML=items.map(btn).join('')+`<div class="sec-sep">Negocio</div>`+items2.map(btn).join('')+`<div class="foot">${client().name}<br>Pago: ${client().pago}</div>`;
+ }
+ if(c){ (clientTab==='plan'?vPlan:vCal)() } else { ({cal:vCal,board:vBoard,review:vReview,deliver:vDeliver,ingest:vIngest,batch:vBatch,crm:vCrm,pay:vPay,team:vTeam,backup:vBackup})[view]() }
+}
+
+/* ================= CALENDARIO ================= */
+function vCal(){
+ const c=isClient(), cl=client();
+ const first=new Date(cal.y,cal.m-1,1), start=(first.getDay()+6)%7, days=new Date(cal.y,cal.m,0).getDate(), prevDays=new Date(cal.y,cal.m-1,0).getDate();
+ const mn=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][cal.m-1];
+ let cells='';
+ for(let i=0;i<42;i++){
+  let d,y=cal.y,m=cal.m,other=false;
+  if(i<start){d=prevDays-start+i+1;other=true;m=cal.m-1;if(m<1){m=12;y--}}
+  else if(i-start<days){d=i-start+1}
+  else{d=i-start-days+1;other=true;m=cal.m+1;if(m>12){m=1;y++}}
+  const ds=D(y,m,d), ps=pieces().filter(p=>p.date===ds);
+  cells+=`<div class="day ${other?'other':''} ${ds===today()?'today':''}" data-date="${ds}" ondragover="event.preventDefault();this.classList.add('drop')" ondragleave="this.classList.remove('drop')" ondrop="dropDay(event,'${ds}')">
+   <div class="n">${d}</div>${!c?`<button class="add-day" title="Nueva pieza" onclick="openEditor(null,'${ds}')">＋</button>`:''}
+   ${ps.map(p=>`<div class="chip ${c?'client':''} ${p.status}" draggable="${!c}" ondragstart="drag(event,'${p.id}')" onclick="openPiece('${p.id}')"><span class="ic">${p.type==='reel'?'▶':'▤'}</span><span>${esc(p.title)}</span>${!c&&p.planShared?`<span class="sh" title="Guion compartido con el cliente">👁${p.planOk?'✓':''}</span>`:''}</div>`).join('')}
+  </div>`;
+ }
+ const pending=c?pieces().filter(p=>p.status==='aprobado').length:null;
+ const nplan=planPieces().length;
+ $('#main').innerHTML=`${c?clientTabs():''}<div class="vh"><div><div class="k"><span class="rec"></span>${c?'Tu calendario de publicación':'Calendario · '+cl.name}</div><h1>${mn} ${cal.y}</h1>
+  ${c?`<p class="muted">Haz click en un día para ver el contenido, copiar el texto y descargar. ${pending?`<b style="color:var(--volt)">${pending} pieza${pending>1?'s':''} lista${pending>1?'s':''} para publicar.</b>`:''}</p>`:`<p class="muted">Arrastra una pieza a otro día para reprogramarla. El cliente solo ve <span class="st aprobado">Aprobado</span> y <span class="st publicado">Publicado</span>.</p>`}</div>
+  <div class="cal-nav"><button class="btn ghost sm" onclick="mv(-1)">‹</button><button class="btn ghost sm" onclick="cal={y:2026,m:9};render()">Hoy</button><button class="btn ghost sm" onclick="mv(1)">›</button>${!c?`<button class="btn ghost sm" onclick="shareMonthPlan()">👁 Compartir plan del mes</button><button class="btn solid sm" onclick="openEditor(null)">＋ Nueva pieza</button>`:''}</div></div>
+  <div class="cal">${['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(x=>`<div class="dow">${x}</div>`).join('')}${cells}</div>
+  ${!c?`<p class="muted" style="margin-top:.8rem;font-size:.8rem">${STATUS.map(s=>`<span class="st ${s[0]}">${s[1]}</span>`).join(' ')}</p>`
+   :(nplan?`<p class="muted" style="margin-top:.9rem">Ya está listo el plan de contenido del próximo mes. <button class="btn sm" onclick="clientTab='plan';render()">Ver el plan (${nplan}) →</button></p>`:'')}`;
+}
+function clientTabs(){const n=planPieces().length;
+ return `<div class="tabs"><button class="${clientTab==='cal'?'on':''}" onclick="clientTab='cal';render()">📅 Calendario</button><button class="${clientTab==='plan'?'on':''}" onclick="clientTab='plan';render()">📝 Plan del próximo mes${n?`<span class="cnt">${n}</span>`:''}</button></div>`}
+function shareMonthPlan(){
+ const pre=String(cal.m).padStart(2,'0'), ps=S.pieces.filter(p=>p.clientId===curClient&&p.date.startsWith(`${cal.y}-${pre}`)&&!CLIENT_VISIBLE.includes(p.status));
+ if(!ps.length){toast('No hay piezas en preparación este mes');return}
+ const sinGuion=ps.filter(p=>!p.guion).length;
+ if(!confirm(`Compartir el guion de ${ps.length} pieza(s) de este mes con ${client().name}.${sinGuion?`\n\nAviso: ${sinGuion} no tienen guion escrito todavía.`:''}\n\nEl cliente podrá leerlas, aprobarlas y comentarlas.`))return;
+ ps.forEach(p=>{if(!p.planShared){p.planShared=true;log(p.id,'note','Guion compartido con el cliente')}});
+ render();toast(`Plan compartido · ${ps.length} piezas`)
+}
+function mv(n){cal.m+=n;if(cal.m<1){cal.m=12;cal.y--}if(cal.m>12){cal.m=1;cal.y++}render()}
+let dragId=null;function drag(e,id){dragId=id;e.dataTransfer.effectAllowed='move'}
+function dropDay(e,ds){e.preventDefault();e.currentTarget.classList.remove('drop');if(!dragId||isClient())return;const p=S.pieces.find(x=>x.id===dragId);if(p.date!==ds){log(p.id,'note',`Reprogramada de ${fmtD(p.date)} a ${fmtD(ds)}`);p.date=ds;toast('Pieza reprogramada')}dragId=null;render()}
+
+/* ================= PLAN DEL PRÓXIMO MES (cliente) ================= */
+function vPlan(){
+ const ps=planPieces();
+ const okc=ps.filter(p=>p.planOk).length;
+ $('#main').innerHTML=`${clientTabs()}<div class="vh"><div><div class="k"><span class="rec"></span>Antes de grabar</div><h1>Plan de contenido del próximo mes</h1>
+  <p class="muted" style="max-width:70ch">Esto es lo que vamos a grabar y cómo lo vamos a hacer. Revísalo antes de la jornada: cambiar una idea aquí toma un minuto; cambiarla después de grabada, no. Aprueba lo que te guste y coméntanos lo que quieras ajustar.</p></div>
+  ${ps.length?`<div class="row"><span class="muted">${okc} de ${ps.length} aprobadas</span><button class="btn solid sm" onclick="planApproveAll()">✓ Aprobar todo el plan</button></div>`:''}</div>
+ ${ps.length?ps.map(p=>`<div class="planitem ${p.planOk?'ok':''}">
+   <div class="row" style="justify-content:space-between"><div><span class="tag ${p.platform}">${{ig:'Instagram',tt:'TikTok',both:'Instagram + TikTok'}[p.platform]}</span> <span class="tag both">${p.type}</span> <b class="hd" style="font-size:1.02rem;margin-left:.4rem">${esc(p.title)}</b></div>
+   <span class="muted">Grabación prevista para publicar el ${fmtD(p.date)}</span></div>
+   ${p.guion?`<div class="gz">${esc(p.guion)}</div>`:'<p class="muted" style="margin-top:.5rem">Guion en preparación.</p>'}
+   ${p.copy?`<details style="margin-top:.6rem"><summary class="muted" style="cursor:pointer">Ver el texto propuesto para la publicación</summary><div class="gz">${esc(p.copy)}\n\n${esc(p.hashtags)}</div></details>`:''}
+   ${planNotes(p.id)}
+   <div class="row" style="margin-top:.8rem">${p.planOk?`<span class="st aprobado">✓ Aprobada por ti</span><button class="btn ghost sm" onclick="planUndo('${p.id}')">Deshacer</button>`
+     :`<button class="btn solid sm" onclick="planOk('${p.id}')">✓ Me gusta, grábenlo así</button>`}
+     <button class="btn ghost sm" onclick="planComment('${p.id}')">💬 Comentar o pedir un cambio</button></div>
+  </div>`).join('')
+ :`<div class="box"><h3>Todavía no hay plan publicado</h3><p class="muted">Cuando el equipo de Kuadra comparta el plan del próximo mes, lo verás aquí antes de la jornada de grabación.</p></div>`}`;
+}
+function planNotes(pid){const ev=S.events.filter(e=>e.pid===pid&&e.type==='client_note');
+ return ev.length?`<div class="hist" style="margin-top:.7rem">${ev.map(e=>`<div>${esc(e.text)}<span>${user(e.by).name} · ${new Date(e.at).toLocaleDateString('es-CO')}</span></div>`).join('')}</div>`:''}
+function planOk(id){const p=S.pieces.find(x=>x.id===id);p.planOk=true;log(id,'note','Plan aprobado por el cliente');render();toast('Aprobada ✓')}
+function planUndo(id){const p=S.pieces.find(x=>x.id===id);p.planOk=false;log(id,'note','El cliente retiró la aprobación del plan');render()}
+function planApproveAll(){planPieces().forEach(p=>{if(!p.planOk){p.planOk=true;log(p.id,'note','Plan aprobado por el cliente')}});render();toast('Plan aprobado ✓')}
+function planComment(id){const t=prompt('¿Qué quieres ajustar de esta idea?');if(t===null||!t.trim())return;log(id,'client_note',t.trim());const p=S.pieces.find(x=>x.id===id);p.planOk=false;render();toast('Comentario enviado a Kuadra')}
+
+/* ================= DRAWER: PIEZA ================= */
+function openDrawer(title,html){$('#dTitle').textContent=title;$('#dBody').innerHTML=html;$('#drawer').classList.add('open');$('#overlay').classList.add('on')}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#overlay').classList.remove('on')}
+function openPiece(id){
+ const p=S.pieces.find(x=>x.id===id), c=isClient();
+ const full=`${p.copy}\n\n${p.hashtags||''}`.trim();
+ const ev=S.events.filter(e=>e.pid===id).reverse();
+ openDrawer(c?'Contenido para publicar':'Pieza',`
+  <div class="row" style="justify-content:space-between"><div><span class="tag ${p.platform}">${{ig:'Instagram',tt:'TikTok',both:'Instagram + TikTok'}[p.platform]}</span> <span class="tag both">${p.type}</span></div>${c?'':`<span class="st ${p.status}">${SL[p.status]}</span>`}</div>
+  <h2 class="hd" style="font-size:1.25rem;margin:.6rem 0">${esc(p.title)}</h2>
+  <div class="meta"><div><b>Publicar el</b>${fmtD(p.date)} · ${p.time||'—'}</div><div><b>Formato</b>${p.type==='reel'?'Video vertical 9:16':'Carrusel de imágenes'}</div></div>
+  ${previewHTML(p.link)}
+  <div class="row" style="margin:.8rem 0">${p.link?`<a class="btn solid" href="${esc(dlLink(p.link))}" target="_blank">⤓ Descargar</a><a class="btn ghost" href="${esc(p.link)}" target="_blank">Abrir en Drive ↗</a>`:`<span class="muted">Archivo pendiente</span>`}</div>
+  <label>Texto para la publicación</label>
+  <div class="copybox">${esc(full)}<button class="btn solid sm cp" onclick="copy(${JSON.stringify(full).replace(/"/g,'&quot;')},'Texto')">⧉ Copiar</button></div>
+  ${c?`<div class="row" style="margin-top:1rem">${p.status==='publicado'?`<span class="st publicado">✓ Publicado</span> <button class="btn ghost sm" onclick="setStatus(S.pieces.find(x=>x.id==='${id}'),'aprobado');closeDrawer();render()">Desmarcar</button>`:`<button class="btn solid" onclick="setStatus(S.pieces.find(x=>x.id==='${id}'),'publicado','marcado por el cliente');closeDrawer();render();toast('¡Publicado! 🎬')">✓ Ya lo publiqué</button>`}</div>
+   <p class="muted" style="font-size:.78rem;margin-top:1rem">Tip: sube el video desde el archivo descargado (no desde un pantallazo) para conservar la calidad.</p>`
+  :`<div class="row" style="margin-top:1rem"><button class="btn solid sm" onclick="openEditor('${id}')">✎ Editar</button>
+    ${p.status==='revision'?`<button class="btn sm" onclick="approve('${id}')">✓ Aprobar</button><button class="btn danger sm" onclick="askChanges('${id}')">Pedir cambios</button>`:''}
+    ${p.status==='cambios'?`<button class="btn sm" onclick="setStatus(S.pieces.find(x=>x.id==='${id}'),'revision','cambios resueltos');closeDrawer();render()">Cambios listos → revisión</button>`:''}
+    <button class="btn danger sm" onclick="delPiece('${id}')">Eliminar</button></div>
+   ${p.planShared?`<div class="row" style="margin-top:.7rem"><span class="st ${p.planOk?'aprobado':'revision'}">${p.planOk?'✓ Plan aprobado por el cliente':'👁 Guion compartido · sin aprobar aún'}</span></div>`:''}
+   ${(()=>{const cn=S.events.filter(e=>e.pid===p.id&&e.type==='client_note');return cn.length?`<div class="warn">💬 El cliente comentó sobre el guion:<br>${cn.map(e=>'“'+esc(e.text)+'”').join('<br>')}</div>`:''})()}
+   ${p.rounds>1?`<div class="warn">⚠ Esta pieza lleva ${p.rounds} rondas de cambios. La ronda adicional es cobrable ($40.000) según contrato.</div>`:''}
+   <div class="meta"><div><b>Responsable</b>${user(p.assignee).name}</div><div><b>Fecha límite interna</b>${p.due?fmtD(p.due):'—'}</div></div>
+   ${p.guion?`<label>Guion / plan de tomas <span class="muted" style="text-transform:none;letter-spacing:0">· solo Kuadra</span></label><div class="copybox" style="font-size:.82rem;max-height:220px;overflow:auto">${esc(p.guion)}<button class="btn solid sm cp" onclick="copy(${JSON.stringify(p.guion||'').replace(/"/g,'&quot;')},'Guion')">⧉</button></div>`:''}
+   <label>Historial</label><div class="hist">${ev.length?ev.map(e=>`<div>${esc(e.text)}<span>${user(e.by).name} · ${new Date(e.at).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'})}</span></div>`).join(''):'<div class="muted">Sin eventos</div>'}</div>`}`);
+}
+function approve(id){setStatus(S.pieces.find(x=>x.id===id),'aprobado','aprobada en reunión');closeDrawer();render();toast('Aprobada — ya la ve el cliente')}
+function askChanges(id){const n=prompt('¿Qué cambios pidió el cliente?');if(n===null)return;const p=S.pieces.find(x=>x.id===id);setStatus(p,'cambios');log(id,'change_request',n||'(sin detalle)');closeDrawer();render();toast('Cambio registrado')}
+function delPiece(id){if(!confirm('¿Eliminar esta pieza?'))return;S.pieces=S.pieces.filter(x=>x.id!==id);closeDrawer();render()}
+function openEditor(id,date){
+ const p=id?S.pieces.find(x=>x.id===id):{clientId:curClient,date:date||D(cal.y,cal.m,1),type:'reel',platform:'both',status:'grabar',title:'',link:'',copy:'',hashtags:'',time:'6:00 pm',assignee:me.id,due:''};
+ openDrawer(id?'Editar pieza':'Nueva pieza',`
+  <label>Título</label><input id="f_title" value="${esc(p.title)}" placeholder="Ej: Tour del cuarto 3">
+  <div class="grid2"><div><label>Publicar el</label><input id="f_date" type="date" value="${p.date}"></div><div><label>Hora sugerida</label><input id="f_time" value="${esc(p.time)}"></div></div>
+  <div class="grid2"><div><label>Plataforma</label><select id="f_plat"><option value="ig" ${p.platform==='ig'?'selected':''}>Instagram</option><option value="tt" ${p.platform==='tt'?'selected':''}>TikTok</option><option value="both" ${p.platform==='both'?'selected':''}>Ambas</option></select></div><div><label>Tipo</label><select id="f_type"><option value="reel" ${p.type==='reel'?'selected':''}>Reel</option><option value="carrusel" ${p.type==='carrusel'?'selected':''}>Carrusel</option></select></div></div>
+  <label>Link de Drive (o URL directa del archivo)</label><input id="f_link" value="${esc(p.link)}" placeholder="https://drive.google.com/file/d/…/view">
+  <label>Copy</label><textarea id="f_copy">${esc(p.copy)}</textarea>
+  <label>Hashtags</label><input id="f_tags" value="${esc(p.hashtags)}">
+  <label>Guion / plan de tomas (interno — el cliente no lo ve)</label><textarea id="f_guion" style="min-height:120px">${esc(p.guion||'')}</textarea>
+  <div class="grid2"><div><label>Estado</label><select id="f_status">${STATUS.map(s=>`<option value="${s[0]}" ${p.status===s[0]?'selected':''}>${s[1]}</option>`).join('')}</select></div><div><label>Responsable</label><select id="f_ass">${USERS.filter(u=>!u.clientId).map(u=>`<option value="${u.id}" ${p.assignee===u.id?'selected':''}>${u.name}</option>`).join('')}</select></div></div>
+  <label>Fecha límite interna (entrega de edición)</label><input id="f_due" type="date" value="${p.due||''}">
+  <label>Visibilidad del guion</label>
+  <div class="row" style="gap:.5rem;align-items:center"><input type="checkbox" id="f_share" style="width:auto" ${p.planShared?'checked':''}><span style="font-size:.88rem">Compartir el guion con el cliente en “Plan del próximo mes”</span></div>
+  <div class="row" style="margin-top:1.2rem"><button class="btn solid" onclick="saveEditor('${id||''}')">Guardar</button><button class="btn ghost" onclick="closeDrawer()">Cancelar</button></div>`);
+}
+function saveEditor(id){
+ const v=k=>$('#f_'+k).value;
+ const data={title:v('title'),date:v('date'),time:v('time'),platform:v('plat'),type:v('type'),link:v('link').trim(),copy:v('copy'),hashtags:v('tags'),guion:v('guion'),planShared:$('#f_share').checked,status:v('status'),assignee:v('ass'),due:v('due')};
+ if(!data.title){toast('Ponle un título');return}
+ if(id){const p=S.pieces.find(x=>x.id===id);const st=p.status;Object.assign(p,data);if(st!==data.status){p.status=st;setStatus(p,data.status)}log(id,'note','Pieza editada')}
+ else{addPiece({clientId:curClient,...data})}
+ closeDrawer();render();toast('Guardado')
+}
+
+/* ================= TABLERO ================= */
+function vBoard(){
+ const ps=S.pieces.filter(p=>p.clientId===curClient);
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Operación · ${client().name}</div><h1>Tablero de producción</h1><p class="muted">Arrastra entre columnas. Cada movimiento queda en el historial de la pieza.</p></div></div>
+ <div class="board">${STATUS.map(s=>`<div class="col" ondragover="event.preventDefault();this.classList.add('drop')" ondragleave="this.classList.remove('drop')" ondrop="dropCol(event,'${s[0]}')"><h4>${s[1]}<span>${ps.filter(p=>p.status===s[0]).length}</span></h4>
+  ${ps.filter(p=>p.status===s[0]).sort((a,b)=>a.date.localeCompare(b.date)).map(p=>`<div class="card ${p.due&&p.due<today()&&!['aprobado','publicado'].includes(p.status)?'late':''}" draggable="true" ondragstart="drag(event,'${p.id}')" onclick="openPiece('${p.id}')"><b>${esc(p.title)}</b><span class="tag ${p.platform}">${p.platform}</span> <span class="tag both">${p.type}</span><div class="m"><span>Publica ${fmtD(p.date)}</span><span>${user(p.assignee).name}</span></div>${p.link?'':'<div class="m"><span style="color:var(--ambar)">sin archivo</span></div>'}</div>`).join('')}</div>`).join('')}</div>`;
+}
+function dropCol(e,st){e.preventDefault();e.currentTarget.classList.remove('drop');if(!dragId)return;const p=S.pieces.find(x=>x.id===dragId);if(st==='cambios'&&p.status!=='cambios'){const n=prompt('¿Qué cambio se pidió?');if(n===null){dragId=null;return}setStatus(p,st);log(p.id,'change_request',n||'(sin detalle)')}else setStatus(p,st);dragId=null;render()}
+
+/* ================= SALA DE REVISIÓN ================= */
+function vReview(){
+ const ps=S.pieces.filter(p=>p.clientId===curClient&&p.status==='revision').sort((a,b)=>a.date.localeCompare(b.date));
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Reunión con ${client().name}</div><h1>Sala de revisión</h1><p class="muted">Comparte esta pantalla con el cliente. Pieza por pieza: previsualiza, aprueba o registra el cambio. Lo aprobado aparece de inmediato en su calendario.</p></div><div><button class="btn sm" onclick="approveAll()">✓ Aprobar todas (${ps.length})</button></div></div>
+ ${ps.length?ps.map(p=>`<div class="rev-item">${previewHTML(p.link)}<div><div class="row" style="justify-content:space-between"><b class="hd" style="font-size:1.05rem">${esc(p.title)}</b><span><span class="tag ${p.platform}">${p.platform}</span> <span class="tag both">${p.type}</span></span></div>
+   <div class="meta"><div><b>Publica</b>${fmtD(p.date)} · ${p.time}</div><div><b>Rondas de cambios</b>${p.rounds||0}${p.rounds>=1?' <span style="color:var(--ambar)">· la siguiente es cobrable</span>':''}</div></div>
+   <div class="copybox" style="font-size:.85rem;max-height:120px;overflow:auto">${esc(p.copy)}<br><span class="muted">${esc(p.hashtags)}</span></div>
+   <div class="row" style="margin-top:.8rem"><button class="btn solid sm" onclick="approve('${p.id}')">✓ Aprobar</button><button class="btn danger sm" onclick="askChanges('${p.id}')">Pedir cambios</button><button class="btn ghost sm" onclick="openPiece('${p.id}')">Detalle</button></div></div></div>`).join('')
+ :`<div class="box"><h3>Nada en revisión</h3><p class="muted">Cuando el editor mueva piezas a <span class="st revision">En revisión</span>, aparecen aquí listas para la reunión.</p></div>`}`;
+}
+function approveAll(){S.pieces.filter(p=>p.clientId===curClient&&p.status==='revision').forEach(p=>setStatus(p,'aprobado','aprobada en reunión'));render();toast('Todas aprobadas')}
+
+/* ================= ENTREGAS ================= */
+function vDeliver(){
+ const ps=S.pieces.filter(p=>p.clientId===curClient), pend=ps.filter(p=>['grabar','editar','cambios','revision'].includes(p.status)).sort((a,b)=>(a.due||a.date).localeCompare(b.due||b.date));
+ const cnt=st=>ps.filter(p=>p.status===st).length, late=pend.filter(p=>p.due&&p.due<today()).length, nolink=ps.filter(p=>!p.link&&!['grabar'].includes(p.status)).length;
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>${client().name}</div><h1>Entregas y vencimientos</h1><p class="muted">Lo que falta para que el mes esté completo. Esta es la pantalla de cada mañana.</p></div></div>
+ <div class="stats"><div class="stat"><div class="n">${ps.length}</div><div class="l">piezas del mes</div></div><div class="stat"><div class="n">${cnt('aprobado')+cnt('publicado')}</div><div class="l">entregadas al cliente</div></div><div class="stat"><div class="n" style="color:${late?'var(--rojo)':'var(--volt)'}">${late}</div><div class="l">vencidas</div></div><div class="stat"><div class="n" style="color:${nolink?'var(--ambar)':'var(--volt)'}">${nolink}</div><div class="l">sin archivo en Drive</div></div><div class="stat"><div class="n">${cnt('publicado')}</div><div class="l">publicadas por el cliente</div></div></div>
+ <table><thead><tr><th>Pieza</th><th>Estado</th><th>Responsable</th><th>Límite interno</th><th>Publica</th><th>Archivo</th><th></th></tr></thead><tbody>
+ ${pend.length?pend.map(p=>`<tr class="${p.due&&p.due<today()?'late':''}"><td><b>${esc(p.title)}</b><br><span class="tag ${p.platform}">${p.platform}</span> <span class="tag both">${p.type}</span></td><td><span class="st ${p.status}">${SL[p.status]}</span></td><td>${user(p.assignee).name}</td><td>${p.due?fmtD(p.due):'—'}${p.due&&p.due<today()?' <span style="color:var(--rojo)">vencida</span>':''}</td><td>${fmtD(p.date)}</td><td>${p.link?'✓':'<span style="color:var(--ambar)">falta</span>'}</td><td><button class="btn ghost sm" onclick="openPiece('${p.id}')">Abrir</button></td></tr>`).join(''):'<tr><td colspan="7" class="muted">Todo entregado. 🎬</td></tr>'}</tbody></table>`;
+}
+
+/* ================= CARGA POR LOTE ================= */
+function vBatch(){
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>${client().name}</div><h1>Carga por lote</h1><p class="muted">Pega los links de Drive del mes y el sistema los reparte en los días de publicación. O importa el formato completo desde una hoja de cálculo.</p></div></div>
+ <div class="grid2">
+  <div class="box"><h3>Modo rápido: solo links</h3><p class="muted" style="font-size:.85rem">Un link por línea. Se asignan en orden a los días <b>L · X · V · S</b> del mes elegido, empezando por el primer día libre. Quedan en <span class="st editar">Por editar</span> para que después completes título y copy.</p>
+   <label>Mes</label><input id="b_month" type="month" value="${cal.y}-${String(cal.m).padStart(2,'0')}">
+   <label>Links</label><textarea id="b_links" placeholder="https://drive.google.com/file/d/AAA/view&#10;https://drive.google.com/file/d/BBB/view&#10;…"></textarea>
+   <div class="row" style="margin-top:.8rem"><button class="btn solid" onclick="batchLinks()">Repartir en el calendario</button></div></div>
+  <div class="box"><h3>Modo completo: desde hoja de cálculo</h3><p class="muted" style="font-size:.85rem">Una pieza por línea, campos separados por <code>;</code>:<br><code>fecha; plataforma; tipo; título; link; copy; hashtags; hora</code><br>Fecha <code>2026-09-14</code>, plataforma <code>ig</code> / <code>tt</code> / <code>both</code>, tipo <code>reel</code> / <code>carrusel</code>. Entran en <span class="st revision">En revisión</span>.</p>
+   <label>Filas</label><textarea id="b_rows" style="min-height:160px" placeholder="2026-09-14; both; reel; La cocina a las 7 am; https://drive.google.com/file/d/…; Texto del post; #coliving #bogota; 6:00 pm"></textarea>
+   <div class="row" style="margin-top:.8rem"><button class="btn solid" onclick="batchRows()">Importar</button><button class="btn ghost" onclick="exportRows()">⧉ Copiar las piezas actuales en este formato</button></div></div>
+ </div>`;
+}
+function batchLinks(){
+ const [y,m]=$('#b_month').value.split('-').map(Number), links=$('#b_links').value.split('\n').map(s=>s.trim()).filter(Boolean);
+ if(!links.length){toast('Pega al menos un link');return}
+ const days=new Date(y,m,0).getDate(), slots=[];
+ for(let d=1;d<=days;d++){const dow=new Date(y,m-1,d).getDay();if([1,3,5,6].includes(dow)){const ds=D(y,m,d);if(!S.pieces.some(p=>p.clientId===curClient&&p.date===ds))slots.push(ds)}}
+ let n=0;links.forEach((l,i)=>{const ds=slots[i]||D(y,m,days);addPiece({clientId:curClient,date:ds,type:'reel',platform:'both',status:'editar',title:`Pieza ${i+1} — sin título`,link:l,copy:'',hashtags:'',time:'6:00 pm',assignee:me.id,due:''});n++});
+ cal={y,m};view='cal';render();toast(`${n} piezas creadas y repartidas`)
+}
+function batchRows(){
+ const rows=$('#b_rows').value.split('\n').map(s=>s.trim()).filter(Boolean);let n=0;
+ rows.forEach(r=>{const f=r.split(';').map(s=>s.trim());if(f.length<4)return;addPiece({clientId:curClient,date:f[0],platform:f[1]||'both',type:f[2]||'reel',title:f[3],link:f[4]||'',copy:f[5]||'',hashtags:f[6]||'',time:f[7]||'6:00 pm',status:'revision',assignee:me.id,due:''});n++});
+ if(!n){toast('No reconocí filas válidas');return}view='cal';render();toast(`${n} piezas importadas`)
+}
+function exportRows(){copy(S.pieces.filter(p=>p.clientId===curClient).map(p=>[p.date,p.platform,p.type,p.title,p.link,p.copy.replace(/\n/g,' / '),p.hashtags,p.time].join('; ')).join('\n'),'Formato')}
+
+/* ================= IMPORTAR GUION ================= */
+let ING={rows:[],src:''};
+const PROMPT_IA=`Vas a generar el guion de contenido de un mes para un cliente de Kuadra.
+Entrega el documento con UNA SECCIÓN POR PIEZA, exactamente con estas etiquetas (no cambies los nombres ni el orden):
+
+### PIEZA 1
+Fecha: 2026-09-14
+Plataforma: Instagram + TikTok
+Tipo: Reel
+Titulo: La cocina compartida a las 7 am
+Hora: 6:00 pm
+Link: (dejar vacio si aun no existe el archivo)
+Copy:
+Texto completo del post, puede ocupar varias lineas.
+Hashtags: #coliving #bogota
+Guion:
+0-3 s | Plano del cafe cayendo | TXT: "7:00 am" | VOZ: ...
+3-8 s | ...
+
+### PIEZA 2
+...
+
+Reglas: una linea "### PIEZA n" antes de cada pieza; fecha en formato AAAA-MM-DD; Plataforma solo Instagram, TikTok o ambas; Tipo solo Reel o Carrusel. No agregues tablas, ni numeracion extra, ni texto entre las piezas.`;
+
+function vIngest(){
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>${client().name}</div><h1>Importar guion</h1><p class="muted">Sube el PDF (o .txt / .md) que generaste con IA y el sistema crea las piezas en el calendario: fecha, plataforma, título, copy, hashtags, hora y guion.</p></div>
+  <div class="row"><button class="btn ghost sm" onclick="copy(PROMPT_IA,'Prompt')">⧉ Copiar prompt para la IA</button><button class="btn ghost sm" onclick="showFmt()">Ver formato</button></div></div>
+ <div class="grid2">
+  <div>
+   <div class="drop-zone" id="dz" onclick="document.getElementById('fileIn').click()"
+        ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dzDrop(event)">
+     <div class="big">Arrastra aquí tu PDF</div>
+     <div class="muted">o haz click para elegirlo · también .txt, .md, .csv</div>
+   </div>
+   <input type="file" id="fileIn" class="hidden" accept=".pdf,.txt,.md,.csv" onchange="readFile(this.files[0])">
+   <label>…o pega el texto del guion</label>
+   <textarea id="ing_text" style="min-height:150px" placeholder="Pega aquí el contenido si el PDF no se deja leer"></textarea>
+   <div class="row" style="margin-top:.7rem">
+     <button class="btn solid" onclick="parseNow($('#ing_text').value,'texto pegado')">Analizar</button>
+     <span class="muted" id="ing_status"></span>
+   </div>
+  </div>
+  <div class="box"><h3>Cómo funciona</h3>
+   <p class="muted" style="font-size:.85rem">1. Copia el prompt de arriba y pásaselo a la IA con la que generas los guiones: así el PDF sale con el formato que el sistema entiende.<br>
+   2. Sube el PDF aquí. Se lee en tu propio navegador; nada se envía a ningún servidor.<br>
+   3. Revisas la tabla de lo detectado, desmarcas lo que no quieras y confirmas.<br>
+   4. Las piezas entran al calendario en el estado que elijas.</p>
+   <div class="warn">El calendario del cliente solo muestra piezas <b>Aprobadas</b>. Si importas en “Por grabar” o “En revisión”, el cliente no las verá hasta que las apruebes en la sala de revisión.</div>
+   <h3 style="margin-top:1rem">Si una pieza ya existe</h3>
+   <p class="muted" style="font-size:.85rem">Cuando coincide la fecha y el título con una pieza que ya está en el calendario, se <b>actualiza</b> en vez de duplicarse (y queda registrado en su historial).</p>
+  </div>
+ </div>
+ <div id="ing_prev" style="margin-top:1.4rem"></div>`;
+}
+function showFmt(){openDrawer('Formato del guion',`<p class="muted">Cualquier PDF que siga esta estructura se importa sin ajustes. Las etiquetas no distinguen mayúsculas ni tildes.</p><pre class="fmt">${esc(PROMPT_IA)}</pre><div class="row" style="margin-top:.8rem"><button class="btn solid sm" onclick="copy(PROMPT_IA,'Prompt')">⧉ Copiar</button></div>`)}
+function dzDrop(e){e.preventDefault();e.currentTarget.classList.remove('over');const f=e.dataTransfer.files[0];if(f)readFile(f)}
+function setIng(t){const e=$('#ing_status');if(e)e.textContent=t}
+
+async function readFile(f){
+ if(!f)return; setIng('Leyendo '+f.name+'…');
+ try{
+  let text='';
+  if(/\.pdf$/i.test(f.name)){
+   if(!window.pdfjsLib){setIng('No se pudo cargar el lector de PDF (¿sin internet?). Pega el texto en el recuadro.');return}
+   pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+   const buf=await f.arrayBuffer(), pdf=await pdfjsLib.getDocument({data:buf}).promise;
+   for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i), tc=await page.getTextContent();
+    let last=null,line='';
+    tc.items.forEach(it=>{const y=it.transform[5];
+      if(last!==null&&Math.abs(y-last)>2){text+=line.trim()+'\n';line=''}
+      line+=it.str+(it.str.endsWith(' ')?'':' ');last=y});
+    text+=line.trim()+'\n\n';
+   }
+  } else { text=await f.text() }
+  $('#ing_text').value=text; parseNow(text,f.name);
+ }catch(err){setIng('No se pudo leer el archivo: '+err.message)}
+}
+
+const MONTHS={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12};
+const noAcc=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function parseDate(v){
+ v=(v||'').trim(); let m;
+ if(m=v.match(/(\d{4})-(\d{1,2})-(\d{1,2})/))return D(+m[1],+m[2],+m[3]);
+ if(m=v.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/))return D(+m[3],+m[2],+m[1]);
+ if(m=noAcc(v).match(/(\d{1,2})\s*(?:de\s*)?([a-z]+)\s*(?:de\s*)?(\d{4})?/)){
+   const mm=MONTHS[m[2]]; if(mm)return D(m[3]?+m[3]:cal.y,mm,+m[1]);
+ }
+ return null;
+}
+function parsePlat(v){const t=noAcc(v);const ig=/insta|\big\b/.test(t),tt=/tik|\btt\b/.test(t);
+ if(/ambas|both|las dos/.test(t)||(ig&&tt))return 'both';if(tt)return 'tt';if(ig)return 'ig';return 'both'}
+function parseType(v){return /carrus/.test(noAcc(v))?'carrusel':'reel'}
+
+function parseGuion(text){
+ const blocks=text.split(/\n(?=\s*(?:#{1,4}\s*)?pieza\s*\d+\b)/i).filter(b=>/pieza\s*\d+/i.test(b));
+ const src = blocks.length?blocks:[text];
+ const out=[];
+ src.forEach((b,idx)=>{
+  const lines=b.split('\n');
+  const P={idx:idx+1,title:'',date:null,platform:'both',type:'reel',time:'6:00 pm',link:'',copy:'',hashtags:'',guion:'',warn:[]};
+  let mode=null;
+  lines.forEach(raw=>{
+   const line=raw.replace(/\s+$/,''); const t=noAcc(line.trim());
+   const lab=line.match(/^\s*(?:[-*•]\s*)?([A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,20}?)\s*:\s*(.*)$/);
+   if(lab){
+    const k=noAcc(lab[1].trim()), v=lab[2].trim();
+    if(/^(fecha|dia|publicar)/.test(k)){P.date=parseDate(v);if(!P.date&&v)P.warn.push('fecha no reconocida');mode=null;return}
+    if(/^plataforma|^red/.test(k)){P.platform=parsePlat(v);mode=null;return}
+    if(/^tipo|^formato/.test(k)){P.type=parseType(v);mode=null;return}
+    if(/^titulo|^nombre/.test(k)){P.title=v;mode=null;return}
+    if(/^hora/.test(k)){if(v)P.time=v;mode=null;return}
+    if(/^link|^url|^archivo|^drive/.test(k)){P.link=v;mode=null;return}
+    if(/^hashtags?|^etiquetas/.test(k)){P.hashtags=v;mode=null;return}
+    if(/^copy|^texto|^caption|^descripcion/.test(k)){mode='copy';if(v)P.copy+=v+'\n';return}
+    if(/^guion|^tomas|^storyboard|^plan/.test(k)){mode='guion';if(v)P.guion+=v+'\n';return}
+   }
+   if(/^\s*(?:#{1,4}\s*)?pieza\s*\d+/i.test(line)){const m=line.match(/pieza\s*\d+\s*[—\-–:]\s*(.+)$/i);if(m&&!P.title)P.title=m[1].trim();return}
+   if(mode==='copy'){P.copy+=line+'\n';return}
+   if(mode==='guion'){P.guion+=line+'\n';return}
+   if(!P.title&&line.trim()&&!/^[-=_]{3,}$/.test(line.trim()))P.title=line.trim().slice(0,90);
+  });
+  P.copy=P.copy.trim(); P.guion=P.guion.trim();
+  if(!P.hashtags){const h=P.copy.match(/(#[^\s#]+(?:\s+#[^\s#]+)*)\s*$/);if(h){P.hashtags=h[1].trim();P.copy=P.copy.slice(0,h.index).trim()}}
+  if(!P.title)P.warn.push('sin título');
+  if(!P.date)P.warn.push('sin fecha');
+  if(!P.copy)P.warn.push('sin copy');
+  out.push(P);
+ });
+ return out;
+}
+
+function parseNow(text,src){
+ if(!text||!text.trim()){setIng('No hay texto que analizar');return}
+ ING.rows=parseGuion(text); ING.src=src||'texto';
+ const ok=ING.rows.filter(r=>!r.warn.length).length;
+ setIng(`${ING.rows.length} piezas detectadas · ${ok} completas`);
+ renderPrev();
+}
+function renderPrev(){
+ const R=ING.rows;
+ if(!R.length){$('#ing_prev').innerHTML=`<div class="box"><h3>No detecté piezas</h3><p class="muted">Revisa que el documento use las etiquetas del formato (botón “Ver formato”). También puedes pegar el texto y volver a analizar.</p></div>`;return}
+ $('#ing_prev').innerHTML=`<div class="vh"><div><h1 style="font-size:1.2rem">Revisión de lo detectado</h1><p class="muted">Desmarca lo que no quieras importar. Puedes corregir la fecha aquí mismo.</p></div>
+  <div class="row"><label style="margin:0;text-transform:none;letter-spacing:0;color:#BDBDBD">Estado al importar</label>
+  <select id="ing_status_sel" style="width:auto">${STATUS.filter(s=>s[0]!=='publicado').map(s=>`<option value="${s[0]}" ${s[0]==='grabar'?'selected':''}>${s[1]}</option>`).join('')}</select>
+  <button class="btn solid" onclick="commitIngest()">Importar al calendario</button></div></div>
+ <table><thead><tr><th class="chkcell">✓</th><th>#</th><th>Título</th><th>Fecha</th><th>Plataforma</th><th>Tipo</th><th>Hora</th><th>Copy</th><th>Guion</th><th>Aviso</th></tr></thead><tbody>
+ ${R.map((r,i)=>`<tr class="${r.warn.length?'warnrow':'okrow'}">
+   <td class="chkcell"><input type="checkbox" id="ck${i}" ${r.warn.includes('sin fecha')?'':'checked'}></td>
+   <td>${r.idx}</td>
+   <td><input value="${esc(r.title)}" onchange="ING.rows[${i}].title=this.value" style="min-width:180px"></td>
+   <td><input type="date" value="${r.date||''}" onchange="ING.rows[${i}].date=this.value" style="min-width:140px"></td>
+   <td><span class="tag ${r.platform}">${r.platform}</span></td>
+   <td>${r.type}</td><td>${esc(r.time)}</td>
+   <td class="muted" style="max-width:220px">${esc((r.copy||'').slice(0,90))}${r.copy.length>90?'…':''}</td>
+   <td>${r.guion?'<span class="pill">'+r.guion.split('\n').length+' líneas</span>':'<span class="muted">—</span>'}</td>
+   <td>${r.warn.length?r.warn.join(', '):'<span style="color:var(--volt)">completa</span>'}</td></tr>`).join('')}
+ </tbody></table>`;
+}
+function commitIngest(){
+ const st=$('#ing_status_sel').value; let created=0,updated=0,skipped=0;
+ ING.rows.forEach((r,i)=>{
+  if(!document.getElementById('ck'+i).checked){skipped++;return}
+  if(!r.date){skipped++;return}
+  const ex=S.pieces.find(p=>p.clientId===curClient&&p.date===r.date&&noAcc(p.title)===noAcc(r.title));
+  const data={title:r.title||'Sin título',date:r.date,platform:r.platform,type:r.type,time:r.time,link:r.link||'',copy:r.copy,hashtags:r.hashtags,guion:r.guion};
+  if(ex){Object.assign(ex,data);log(ex.id,'note',`Actualizada desde guion importado (${ING.src})`);updated++}
+  else{const np=addPiece({clientId:curClient,...data,status:st,assignee:me.id,due:''},true);log(np.id,'created',`Creada desde guion importado (${ING.src})`);created++}
+ });
+ ING.rows=[];view='cal';render();
+ toast(`${created} creadas · ${updated} actualizadas${skipped?` · ${skipped} omitidas`:''}`);
+}
+
+/* ================= PROSPECTOS (CRM) ================= */
+let crmFilter='', crmStage='';
+function vCrm(){
+ const q=noAcc(crmFilter);
+ const list=S.prospects.filter(x=>(!crmStage||x.stage===crmStage)&&(!q||noAcc(`${x.company} ${x.contact} ${x.role||''} ${x.city} ${x.ig}`).includes(q)))
+   .sort((a,b)=>STAGES.findIndex(s=>s[0]===a.stage)-STAGES.findIndex(s=>s[0]===b.stage)||a.company.localeCompare(b.company));
+ const c=st=>S.prospects.filter(x=>x.stage===st).length;
+ const overdue=S.prospects.filter(x=>x.next&&x.next<today()&&!['activo','perdido'].includes(x.stage)).length;
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Kuadra</div><h1>Prospectos y clientes</h1>
+   <p class="muted">Con quién hemos hablado, en qué va cada conversación y qué sigue. Esta sección es solo de Kuadra: ningún cliente la ve.</p></div>
+   <div class="row"><button class="btn ghost sm" onclick="crmExport()">⧉ Copiar como tabla</button><button class="btn solid" onclick="crmEdit(null)">＋ Nuevo prospecto</button></div></div>
+ <div class="stats">${STAGES.map(s=>`<div class="stat" style="cursor:pointer" onclick="crmStage=crmStage==='${s[0]}'?'':'${s[0]}';render()"><div class="n" style="${crmStage===s[0]?'':'color:var(--humo)'}">${c(s[0])}</div><div class="l">${s[1]}</div></div>`).join('')}
+  <div class="stat"><div class="n" style="color:${overdue?'var(--rojo)':'var(--volt)'}">${overdue}</div><div class="l">seguimientos vencidos</div></div></div>
+ <div class="crmbar"><input placeholder="Buscar empresa, contacto o ciudad…" value="${esc(crmFilter)}" oninput="crmFilter=this.value;clearTimeout(window._t);window._t=setTimeout(render,250)">
+  ${crmStage?`<button class="btn ghost sm" onclick="crmStage='';render()">✕ Quitar filtro: ${STL[crmStage]}</button>`:''}
+  <span class="muted">${list.length} de ${S.prospects.length}</span></div>
+ <table><thead><tr><th>Empresa</th><th>Contacto</th><th>Teléfono</th><th>Redes / web</th><th>Etapa</th><th>Próximo paso</th><th>Notas</th><th></th></tr></thead><tbody>
+ ${list.length?list.map(x=>`<tr class="${x.next&&x.next<today()&&!['activo','perdido'].includes(x.stage)?'late':''}">
+   <td><b>${esc(x.company)}</b><span class="mini">${esc(x.city||'')}</span></td>
+   <td>${x.contact?`<b>${esc(x.contact)}</b>`:`<span class="noname">sin nombre</span>`}<span class="mini">${esc(x.role||x.contact&&''||'—')}</span>${x.email?`<span class="mini"><a href="mailto:${esc(x.email)}">${esc(x.email)}</a><button class="cpbtn" title="Copiar correo" onclick="copy('${esc(x.email)}','Correo')">⧉</button></span>`:''}</td>
+   <td>${x.phone?`${esc(x.phone)}<button class="cpbtn" title="Copiar número" onclick="copy('${esc(x.phone)}','Número')">⧉</button><span class="mini"><a href="https://wa.me/57${x.phone.replace(/\D/g,'')}" target="_blank">Abrir WhatsApp ↗</a></span>`:'<span class="muted">—</span>'}</td>
+   <td>${x.ig?`<a href="https://instagram.com/${esc(x.ig.replace('@',''))}" target="_blank">${esc(x.ig)}</a>`:'—'}<span class="mini">${x.web?`<a href="${x.web.startsWith('http')?esc(x.web):'https://'+esc(x.web)}" target="_blank">${esc(x.web)}</a>`:''}</span></td>
+   <td><select class="selcell ${x.stage}" onchange="crmSetStage('${x.id}',this.value)">${STAGES.map(st=>`<option value="${st[0]}" ${x.stage===st[0]?'selected':''}>${st[1]}</option>`).join('')}</select></td>
+   <td>${x.next?fmtD(x.next):'—'}<span class="mini">${esc(x.nextWhat||'')}</span></td>
+   <td class="muted" style="max-width:230px">${esc((x.notes||'').slice(0,110))}${(x.notes||'').length>110?'…':''}</td>
+   <td><div class="row"><button class="btn ghost sm" onclick="crmEdit('${x.id}')">Abrir</button>${x.stage==='firmado'?`<button class="btn sm" onclick="crmActivate('${x.id}')">→ Activar</button>`:''}</div></td></tr>`).join('')
+ :`<tr><td colspan="8" class="muted">Sin resultados. Crea el primer prospecto con el botón de arriba.</td></tr>`}</tbody></table>`;
+}
+function crmSetStage(id,val){
+ const x=S.prospects.find(v=>v.id===id), prev=x.stage; x.stage=val;
+ if(val==='activo'&&!x.clientId){crmActivate(id);return}
+ render(); toast(`${x.company}: ${STL[prev]} → ${STL[val]}`)
+}
+function crmEdit(id){
+ const x=id?S.prospects.find(v=>v.id===id):{company:'',contact:'',role:'',phone:'',email:'',ig:'',tt:'',web:'',city:'',stage:'nuevo',notes:'',next:'',nextWhat:'',clientId:''};
+ openDrawer(id?'Prospecto':'Nuevo prospecto',`
+  <label>Empresa</label><input id="c_company" value="${esc(x.company)}" placeholder="Ej: Nativos — Gran Plaza Soacha">
+  <div class="grid2"><div><label>Nombre de la persona</label><input id="c_contact" value="${esc(x.contact)}" placeholder="Ej: Andrés Ramírez"></div><div><label>Cargo en la organización</label><input id="c_role" value="${esc(x.role||'')}" placeholder="Ej: Jefe de mercadeo"></div></div>
+  <label>Ciudad / zona</label><input id="c_city" value="${esc(x.city)}">
+  <div class="grid2"><div><label>WhatsApp / celular</label><input id="c_phone" value="${esc(x.phone)}"></div><div><label>Correo</label><input id="c_email" value="${esc(x.email)}"></div></div>
+  <div class="grid2"><div><label>Instagram</label><input id="c_ig" value="${esc(x.ig)}" placeholder="@marca"></div><div><label>TikTok</label><input id="c_tt" value="${esc(x.tt||'')}" placeholder="@marca"></div></div>
+  <label>Sitio web</label><input id="c_web" value="${esc(x.web)}">
+  <div class="grid2"><div><label>Etapa</label><select id="c_stage">${STAGES.map(s=>`<option value="${s[0]}" ${x.stage===s[0]?'selected':''}>${s[1]}</option>`).join('')}</select></div>
+   <div><label>Vincular a cliente del sistema</label><select id="c_client"><option value="">— ninguno —</option>${S.clients.map(cl=>`<option value="${cl.id}" ${x.clientId===cl.id?'selected':''}>${cl.name}</option>`).join('')}</select></div></div>
+  <div class="grid2"><div><label>Fecha del próximo paso</label><input id="c_next" type="date" value="${x.next||''}"></div><div><label>¿Qué sigue?</label><input id="c_nextwhat" value="${esc(x.nextWhat||'')}" placeholder="Ej: llamar, enviar contrato"></div></div>
+  <label>Notas</label><textarea id="c_notes">${esc(x.notes)}</textarea>
+  <div class="row" style="margin-top:1.2rem"><button class="btn solid" onclick="crmSave('${id||''}')">Guardar</button>
+   ${id?`<button class="btn ghost" onclick="closeDrawer()">Cancelar</button><button class="btn danger sm" onclick="crmDel('${id}')">Eliminar</button>`:`<button class="btn ghost" onclick="closeDrawer()">Cancelar</button>`}</div>
+  ${id&&x.clientId?`<label>Pagos de este cliente</label>${payGrid(x.clientId)}`:''}`);
+}
+function crmSave(id){
+ const v=k=>$('#c_'+k).value;
+ const d={company:v('company').trim(),contact:v('contact'),role:v('role'),phone:v('phone'),email:v('email'),ig:v('ig'),tt:v('tt'),web:v('web'),city:v('city'),stage:v('stage'),clientId:v('client'),next:v('next'),nextWhat:v('nextwhat'),notes:v('notes')};
+ if(!d.company){toast('Ponle el nombre de la empresa');return}
+ if(id)Object.assign(S.prospects.find(x=>x.id===id),d);
+ else S.prospects.push({id:'x'+(S.seq++),createdAt:today(),...d});
+ closeDrawer();render();toast('Guardado')
+}
+function crmDel(id){if(!confirm('¿Eliminar este prospecto? No se puede deshacer.'))return;S.prospects=S.prospects.filter(x=>x.id!==id);closeDrawer();render();toast('Eliminado')}
+function crmActivate(id){
+ const x=S.prospects.find(v=>v.id===id);
+ if(!x.clientId){
+  const cid=noAcc(x.company).replace(/[^a-z0-9]/g,'').slice(0,12)||('c'+S.seq);
+  S.clients.push({id:cid,name:x.company,ig:x.ig,tt:x.tt||'',drive:'',pago:'pendiente'}); x.clientId=cid;
+ }
+ x.stage='activo'; curClient=x.clientId; render(); toast('Cliente activo · ya aparece en el selector de arriba')
+}
+function crmExport(){copy(S.prospects.map(x=>[x.company,x.contact,x.role||'',x.phone,x.email,x.ig,x.web,x.city,STL[x.stage],x.next,x.nextWhat,(x.notes||'').replace(/\n/g,' / ')].join('; ')).join('\n'),'Tabla')}
+
+/* ================= PAGOS ================= */
+function monthsList(){const out=[];for(let i=-5;i<=2;i++){const d=new Date(2026,8+i,1);out.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}return out}
+const MN=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const fmtM=m=>{const [y,mm]=m.split('-');return `${MN[+mm-1]} ${y.slice(2)}`};
+const money=v=>'$'+(+v||0).toLocaleString('es-CO');
+function payOf(cid,m){return S.payments.find(x=>x.clientId===cid&&x.month===m)}
+function payState(p,m){if(!p)return 'sinreg';if(p.status==='pagado')return 'pagado';return m<today().slice(0,7)?'vencido':'pendiente'}
+function payGrid(cid){
+ return `<div class="pay-grid">${monthsList().map(m=>{const p=payOf(cid,m),st=payState(p,m);
+  return `<div class="mcell ${st}" onclick="payEdit('${cid}','${m}')"><b>${fmtM(m)}</b><span class="v">${p?money(p.amount):'sin registro'}</span>${p?`<span class="pl ${st}" style="margin-top:.3rem">${st}</span>`:''}${p&&p.receipt?'<span class="mini">⤓ comprobante</span>':''}</div>`}).join('')}</div>`;
+}
+function vPay(){
+ const cl=S.clients, thisM=today().slice(0,7);
+ const total=m=>cl.reduce((a,c)=>{const p=payOf(c.id,m);return a+(p&&p.status==='pagado'?+p.amount:0)},0);
+ const pend=S.payments.filter(x=>x.status!=='pagado');
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Kuadra</div><h1>Pagos y facturación</h1>
+  <p class="muted">Quién pagó, qué mes y con qué comprobante. Haz click en cualquier casilla para registrar el pago y guardar el enlace del soporte.</p></div>
+  <div class="row"><button class="btn ghost sm" onclick="payExport()">⧉ Copiar como tabla</button></div></div>
+ <div class="stats">
+  <div class="stat"><div class="n">${money(total(thisM))}</div><div class="l">cobrado este mes</div></div>
+  <div class="stat"><div class="n" style="color:${pend.length?'var(--ambar)':'var(--volt)'}">${pend.length}</div><div class="l">pagos pendientes</div></div>
+  <div class="stat"><div class="n">${money(pend.reduce((a,x)=>a+(+x.amount||0),0))}</div><div class="l">por cobrar</div></div>
+  <div class="stat"><div class="n">${cl.length}</div><div class="l">clientes en el sistema</div></div></div>
+ ${cl.map(c=>`<div class="box" style="margin-bottom:1rem"><div class="row" style="justify-content:space-between"><h3>${esc(c.name)}</h3>
+   <span class="muted">${esc(c.ig||'')}</span></div>${payGrid(c.id)}</div>`).join('')}
+ <div class="warn">Recordatorio del contrato: la licencia de uso de cada mes está condicionada al pago de ese mes. Un mes en rojo es un mes cuyo contenido el cliente no debería estar usando.</div>`;
+}
+function payEdit(cid,m){
+ const p=payOf(cid,m)||{clientId:cid,month:m,amount:600000,status:'pendiente',date:'',receipt:'',invoice:''};
+ const cl=S.clients.find(c=>c.id===cid);
+ openDrawer(`Pago · ${cl.name} · ${fmtM(m)}`,`
+  <div class="grid2"><div><label>Valor</label><input id="p_amount" type="number" value="${p.amount}"></div>
+   <div><label>Estado</label><select id="p_status"><option value="pendiente" ${p.status!=='pagado'?'selected':''}>Pendiente</option><option value="pagado" ${p.status==='pagado'?'selected':''}>Pagado</option></select></div></div>
+  <div class="grid2"><div><label>Fecha de pago</label><input id="p_date" type="date" value="${p.date||''}"></div>
+   <div><label>N.º de factura o soporte</label><input id="p_invoice" value="${esc(p.invoice||'')}"></div></div>
+  <label>Enlace del comprobante (Drive)</label><input id="p_receipt" value="${esc(p.receipt||'')}" placeholder="https://drive.google.com/file/d/…">
+  ${p.receipt?`<div style="margin-top:.8rem">${previewHTML(p.receipt)}</div>`:''}
+  <div class="row" style="margin-top:1.2rem"><button class="btn solid" onclick="paySave('${cid}','${m}')">Guardar</button>
+   <button class="btn ghost" onclick="closeDrawer()">Cancelar</button>
+   ${payOf(cid,m)?`<button class="btn danger sm" onclick="payDel('${cid}','${m}')">Borrar registro</button>`:''}</div>`);
+}
+function paySave(cid,m){
+ const d={amount:+$('#p_amount').value||0,status:$('#p_status').value,date:$('#p_date').value,invoice:$('#p_invoice').value.trim(),receipt:$('#p_receipt').value.trim()};
+ const ex=payOf(cid,m);
+ if(ex)Object.assign(ex,d); else S.payments.push({id:'y'+(S.seq++),clientId:cid,month:m,...d});
+ const c=S.clients.find(x=>x.id===cid); if(c)c.pago=payState(payOf(cid,today().slice(0,7)),today().slice(0,7))==='pagado'?'al día':'pendiente';
+ const pr=S.prospects.find(x=>x.clientId===cid); if(pr&&pr.stage==='firmado'&&d.status==='pagado')pr.stage='activo';
+ closeDrawer();render();toast('Pago actualizado')
+}
+function payDel(cid,m){S.payments=S.payments.filter(x=>!(x.clientId===cid&&x.month===m));closeDrawer();render()}
+function payExport(){copy(S.payments.map(x=>[S.clients.find(c=>c.id===x.clientId)?.name||x.clientId,x.month,x.amount,x.status,x.date,x.invoice,x.receipt].join('; ')).join('\n'),'Tabla')}
+
+/* ================= EQUIPO ================= */
+function vTeam(){
+ const team=USERS.filter(u=>!u.clientId);
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Kuadra</div><h1>Equipo y roles</h1><p class="muted">Quién hace qué, y cuánto tiene cada uno en curso (todos los clientes).</p></div></div>
+ <div class="grid2">${team.map(u=>{const mine=S.pieces.filter(p=>p.assignee===u.id&&!['aprobado','publicado'].includes(p.status));return `<div class="box"><div class="row" style="justify-content:space-between"><h3>${u.name}</h3><span>${u.roles.map(r=>`<span class="tag both">${r}</span>`).join(' ')}</span></div>
+  <div class="stats" style="margin:.6rem 0"><div class="stat"><div class="n">${mine.length}</div><div class="l">piezas en curso</div></div><div class="stat"><div class="n" style="color:${mine.filter(p=>p.due&&p.due<today()).length?'var(--rojo)':'var(--volt)'}">${mine.filter(p=>p.due&&p.due<today()).length}</div><div class="l">vencidas</div></div></div>
+  ${mine.slice(0,6).map(p=>`<div class="chip ${p.status}" onclick="curClient='${p.clientId}';openPiece('${p.id}')"><span class="ic">${p.type==='reel'?'▶':'▤'}</span><span>${esc(p.title)} · <span class="muted">${S.clients.find(c=>c.id===p.clientId).name}</span></span></div>`).join('')}</div>`}).join('')}</div>
+ <div class="box" style="margin-top:1.2rem"><h3>Roles del sistema</h3><table><thead><tr><th>Rol</th><th>Ve</th><th>Puede</th></tr></thead><tbody>
+ <tr><td><b>Cliente</b></td><td>Solo su calendario, solo Aprobado/Publicado</td><td>Previsualizar, copiar, descargar, marcar publicado</td></tr>
+ <tr><td><b>Productor</b></td><td>Todo</td><td>Crear piezas y plan de tomas, mover a Por editar</td></tr>
+ <tr><td><b>Editor</b></td><td>Todo</td><td>Carga por lote, links, mover a En revisión, resolver cambios</td></tr>
+ <tr><td><b>Estratega</b></td><td>Todo</td><td>Copys, horarios, análisis semanal, dirigir revisión</td></tr>
+ <tr><td><b>Cuentas</b></td><td>Todo</td><td>Reunión con cliente, aprobar, registrar cambios</td></tr>
+ <tr><td><b>Admin</b></td><td>Todo</td><td>Clientes, usuarios, credenciales, facturación</td></tr></tbody></table></div>`;
+}
+
+/* ================= RESPALDO ================= */
+function vBackup(){
+ $('#main').innerHTML=`<div class="vh"><div><div class="k"><span class="rec"></span>Prototipo</div><h1>Respaldo</h1><p class="muted">Este prototipo guarda todo en memoria: al cerrar la pestaña se pierde. Exporta el JSON para conservar el estado, o impórtalo para continuar.</p></div></div>
+ <div class="grid2"><div class="box"><h3>Exportar</h3><button class="btn solid" onclick="exportJSON()">⤓ Descargar kuadra-os.json</button></div>
+ <div class="box"><h3>Importar</h3><input type="file" accept="application/json" onchange="importJSON(this.files[0])"></div></div>
+ <div class="box" style="margin-top:1.2rem"><h3>Cómo se conecta con Drive</h3><p class="muted" style="font-size:.85rem">1. Carpeta por cliente en el Drive de Kuadra, compartida como <b>"Cualquiera con el enlace: lector"</b>.<br>2. Copia el link de cada archivo (<code>…/file/d/ID/view</code>) y pégalo en la pieza o en la carga por lote.<br>3. El portal embebe la previsualización y genera el link de descarga directa automáticamente.</p></div>`;
+}
+function exportJSON(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='kuadra-os.json';a.click()}
+function importJSON(f){if(!f)return;f.text().then(t=>{try{S=JSON.parse(t);render();toast('Estado importado')}catch{toast('Archivo inválido')}})}
+</script>
+</body>
+</html>

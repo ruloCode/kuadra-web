@@ -10,6 +10,11 @@
   --color-smoke: #F2F2F2;      /* blanco humo — texto */
   --color-signal: #6E6E6E;     /* gris señal — secundario */
 
+  /* Sólo los usa el panel interno (app/os) */
+  --color-panel: #1A1A1A;      /* superficie sobre carbon */
+  --color-amber: #FFC145;      /* aviso */
+  --color-danger: #FF5A5A;     /* error / vencido */
+
   --font-display: var(--font-archivo-black), "Arial Black", system-ui, sans-serif;
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
 
@@ -124,5 +129,50 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ── Kuadra OS ─────────────────────────────────────── */
+/* Estilos del panel interno, acotados a .os-app para que no toquen la landing. */
+@layer base {
+  .os-app {
+    /* El hairline del sitio (#1E1E1E) se pierde en una tabla densa; aquí sube. */
+    --color-line: #2A2A2A;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  .os-app .u-label {
+    color: var(--color-signal);
+  }
+
+  .os-app input,
+  .os-app select,
+  .os-app textarea {
+    background: var(--color-carbon);
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    padding: 0.55rem 0.7rem;
+    width: 100%;
+    color: inherit;
+    font: inherit;
+  }
+
+  .os-app input:focus,
+  .os-app select:focus,
+  .os-app textarea:focus {
+    border-color: var(--color-volt);
+    outline: none;
+  }
+
+  .os-app textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  .os-app input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--color-volt);
   }
 }
