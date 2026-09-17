@@ -10,7 +10,7 @@ await mkdir(MASTERS, { recursive: true })
 let ok = 0, fail = 0
 for (const p of manifest) {
   await mkdir(path.join(MASTERS, p.slug), { recursive: true })
-  const jobs = p.files.map(async (f, i) => {
+  const jobs = p.files.map(async (f) => {
     // rebuild URL at max_1200_webp regardless of the variant originally found
     const m = f.src.match(/project_modules\/[a-z0-9_]+\/(.+)$/)
     if (!m) return

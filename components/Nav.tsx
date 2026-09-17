@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { waLink } from '@/lib/projects'
 import Magnetic from './ui/Magnetic'
@@ -13,22 +13,38 @@ const LINKS = [
   { href: '#estudio', label: 'Estudio' },
 ]
 
+const BOG_TIME = new Intl.DateTimeFormat('es-CO', {
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+  timeZone: 'America/Bogota',
+})
+
+/**
+ * The clock lives outside React: the server has no wall time to render, so the
+ * snapshot is cached in a module and only bumped when the second actually
+ * changes — useSyncExternalStore needs a stable value between reads.
+ */
+let clockSnapshot = ''
+const getClock = () => clockSnapshot
+const getServerClock = () => ''
+const subscribeClock = (onChange: () => void) => {
+  const tick = () => {
+    const next = BOG_TIME.format(new Date())
+    if (next !== clockSnapshot) {
+      clockSnapshot = next
+      onChange()
+    }
+  }
+  tick()
+  const id = setInterval(tick, 1000)
+  return () => clearInterval(id)
+}
+
 /** Live Bogotá time — the "we are on the clock" cue borrowed from studio sites. */
 function Clock() {
-  const [t, setT] = useState<string | null>(null)
-  useEffect(() => {
-    const fmt = () =>
-      new Intl.DateTimeFormat('es-CO', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: 'America/Bogota',
-      }).format(new Date())
-    setT(fmt())
-    const id = setInterval(() => setT(fmt()), 1000)
-    return () => clearInterval(id)
-  }, [])
+  const t = useSyncExternalStore(subscribeClock, getClock, getServerClock)
   return (
     <span className="u-label u-tabular text-signal" suppressHydrationWarning>
       {t ? `BOG ${t}` : 'BOG ——:——:——'}
