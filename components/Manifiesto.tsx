@@ -4,7 +4,7 @@ import { useRef } from 'react'
 import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from 'motion/react'
 
 const TEXT =
-  'No vendemos alcance ni estrategia omnicanal. Vendemos imágenes que hacen que tu producto se vea como lo que vale. Se planea, se rueda, se entrega. Eso es todo.'
+  'No vendemos alcance. Vendemos imágenes que hacen que tu producto se vea como lo que vale. Se planea, se rueda, se entrega.'
 
 /** Words the statement pivots on — held in volt once they light up. */
 const ACCENT = new Set(['vale.', 'planea,', 'rueda,', 'entrega.'])
