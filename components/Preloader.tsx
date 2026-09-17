@@ -31,13 +31,17 @@ export default function Preloader() {
   const shown = reduce ? 100 : pct
 
   useEffect(() => {
-    if (!shouldPlay) return
-    sessionStorage.setItem('kuadra-intro', '1')
-    document.body.style.overflow = 'hidden'
+    if (shouldPlay) sessionStorage.setItem('kuadra-intro', '1')
+  }, [shouldPlay])
+
+  // El scroll se suelta en cuanto la intro termina, no cuando se desmonta:
+  // el componente sigue montado después del exit de AnimatePresence.
+  useEffect(() => {
+    document.body.style.overflow = done ? '' : 'hidden'
     return () => {
       document.body.style.overflow = ''
     }
-  }, [shouldPlay])
+  }, [done])
 
   useEffect(() => {
     if (done) return
