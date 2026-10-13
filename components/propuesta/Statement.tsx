@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from 'motion/react'
 import Claqueta from '../Claqueta'
-import { STATEMENT, STATEMENT_ACCENT } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
 function Word({
   word,
@@ -28,10 +28,12 @@ function Word({
 
 /** The offer in one breath, lighting up word by word as it scrolls through. */
 export default function Statement() {
+  const { statement, statementAccent, statementStats } = usePropuesta()
   const ref = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'start 0.3'] })
-  const words = STATEMENT.split(' ')
+  const words = statement.split(' ')
+  const accent = new Set(statementAccent)
   const rule = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [0, 1])
 
   return (
@@ -63,21 +65,16 @@ export default function Statement() {
                     word={w}
                     range={[start, start + 1 / words.length]}
                     progress={reduce ? rule : scrollYProgress}
-                    accent={STATEMENT_ACCENT.has(w)}
+                    accent={accent.has(w)}
                   />
                 )
               })}
             </p>
             <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 border-t border-line pt-8 lg:mt-16">
-              {[
-                ['8', 'reels al mes'],
-                ['4', 'carruseles al mes'],
-                ['1', 'jornada de rodaje'],
-                ['4', 'revisiones con datos'],
-              ].map(([a, b]) => (
-                <span key={b} className="u-label flex items-baseline gap-2">
-                  <span className="u-display text-[20px] text-volt">{a}</span>
-                  <span className="text-signal">{b}</span>
+              {statementStats.map((s) => (
+                <span key={s.l} className="u-label flex items-baseline gap-2">
+                  <span className="u-display text-[20px] text-volt">{s.n}</span>
+                  <span className="text-signal">{s.l}</span>
                 </span>
               ))}
             </div>

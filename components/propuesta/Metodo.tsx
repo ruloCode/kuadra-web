@@ -4,9 +4,17 @@ import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import Reveal from '../ui/Reveal'
 import SplitLines from '../ui/SplitLines'
-import { STEPS } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
-function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) {
+function Step({
+  step,
+  index,
+  last,
+}: {
+  step: { n: string; title: string; body: string; meta: string }
+  index: number
+  last: boolean
+}) {
   const ref = useRef<HTMLElement>(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
@@ -40,7 +48,7 @@ function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) 
           <p className="mt-5 text-[15px] leading-relaxed text-smoke/70 sm:text-[17px]">{step.body}</p>
         </div>
       </div>
-      {index === STEPS.length - 1 && <span className="absolute inset-x-0 bottom-0 h-px bg-line" />}
+      {last && <span className="absolute inset-x-0 bottom-0 h-px bg-line" />}
     </motion.article>
   )
 }
@@ -51,6 +59,7 @@ function Step({ step, index }: { step: (typeof STEPS)[number]; index: number }) 
  * the list scrolls past, and a volt rule tracks how far you've read.
  */
 export default function Metodo() {
+  const { steps, methodTitle, methodAccent, methodLede } = usePropuesta()
   const ref = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.6', 'end 0.7'] })
@@ -68,23 +77,22 @@ export default function Metodo() {
               </span>
             </Reveal>
             <h2 className="u-display mt-6 max-w-[14ch] text-[clamp(34px,3.8vw,58px)] text-smoke">
-              <SplitLines lines={['Cuatro horas', 'en tu local.', 'Cero', 'improvisación.']} accent={[2, 3]} />
+              <SplitLines lines={methodTitle} accent={methodAccent} />
             </h2>
             <div className="mt-8 hidden h-px w-full bg-line lg:block">
               <motion.div className="h-px w-full origin-left bg-volt" style={{ scaleX: rule }} />
             </div>
             <Reveal delay={0.15}>
               <p className="mt-6 max-w-[34ch] text-[15px] leading-relaxed text-smoke/70">
-                El mismo orden cada mes. Cuando llegamos a grabar ya sabemos qué plano va
-                primero y por qué.
+                {methodLede}
               </p>
             </Reveal>
           </div>
         </div>
 
         <div className="lg:col-span-7">
-          {STEPS.map((s, i) => (
-            <Step key={s.n} step={s} index={i} />
+          {steps.map((s, i) => (
+            <Step key={s.n} step={s} index={i} last={i === steps.length - 1} />
           ))}
         </div>
       </div>

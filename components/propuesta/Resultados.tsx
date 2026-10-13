@@ -59,14 +59,14 @@ export default function Resultados() {
             <Reveal delay={0.15}>
               <p className="mt-8 max-w-[40ch] text-[15px] leading-relaxed text-smoke/70 sm:text-[17px]">
                 Tomamos la cuenta de Bambú Coliving el día que nació y la llevamos desde cero
-                seguidores. Esto es lo que pasó en los primeros treinta días.
+                seguidores. En diez días ya eran +3.419.
               </p>
             </Reveal>
             <Reveal delay={0.25}>
               <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-line pt-6">
                 {[
                   ['Canal', 'Instagram'],
-                  ['Periodo', '30 días'],
+                  ['Periodo', '10 días'],
                   ['Rodajes', '1'],
                 ].map(([k, v]) => (
                   <span key={k} className="u-label flex items-baseline gap-2">

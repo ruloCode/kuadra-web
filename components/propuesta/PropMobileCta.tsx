@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { WA_MAIN } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
 /** Phone-only action bar: planes + WhatsApp, shown once the hero is gone. */
 export default function PropMobileCta() {
+  const { waMain } = usePropuesta()
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function PropMobileCta() {
               Planes
             </a>
             <a
-              href={WA_MAIN}
+              href={waMain}
               target="_blank"
               rel="noopener noreferrer"
               className="flex min-h-[52px] flex-[1.4] items-center justify-center gap-2 bg-volt text-[15px] font-bold text-ink"

@@ -63,6 +63,7 @@ type Props = {
   progress: MotionValue<number>
   ghostX: MotionValue<string>
   ghostOpacity: MotionValue<number>
+  ghost: string
 }
 
 /**
@@ -70,7 +71,7 @@ type Props = {
  * a live timecode, a REC pill, and a faint grid. Everything is decorative and
  * hidden from assistive tech; the copy lives in the hero itself.
  */
-export default function Hud({ ghostX, ghostOpacity }: Props) {
+export default function Hud({ ghostX, ghostOpacity, ghost }: Props) {
   const reduce = useReducedMotion()
   const spring = { duration: 1, ease: [0.16, 1, 0.3, 1] as const }
 
@@ -104,7 +105,7 @@ export default function Hud({ ghostX, ghostOpacity }: Props) {
           WebkitTextStroke: '1px rgba(242,242,242,0.10)',
         }}
       >
-        NATIVOS NATIVOS NATIVOS
+        {ghost}
       </motion.div>
 
       {/* framing brackets */}

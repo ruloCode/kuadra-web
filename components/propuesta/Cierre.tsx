@@ -9,17 +9,24 @@ import Reveal from '../ui/Reveal'
 import SplitLines from '../ui/SplitLines'
 import Wordmark from '../ui/Wordmark'
 import { CONTACT } from '@/lib/projects'
-import { CLIENT, WA_MAIN, wa } from '@/lib/propuesta'
+import { wa } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
 /**
  * Volt sign-off. The block is the one place the page flips to light-on-volt,
  * and a giant ghost wordmark slides behind the headline as you reach it.
  */
 export default function Cierre() {
+  const { client, cierre, waMain } = usePropuesta()
   const ref = useRef<HTMLElement>(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
   const x = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['10%', '-10%'])
+  const agendar = wa(
+    client.address
+      ? `Hola Kuadra, somos ${client.name}. Queremos agendar la jornada de grabación en ${client.address}.`
+      : `Hola Kuadra, somos ${client.name}. Queremos agendar la jornada de grabación.`,
+  )
 
   return (
     <>
@@ -41,13 +48,12 @@ export default function Cierre() {
           </Reveal>
 
           <h2 className="u-display mt-8 max-w-[13ch] text-[clamp(44px,9vw,140px)] text-ink">
-            <SplitLines lines={['Un día tuyo.', 'Un mes', 'de contenido.']} />
+            <SplitLines lines={cierre.lines} />
           </h2>
 
           <Reveal delay={0.2}>
             <p className="mt-9 max-w-[46ch] text-[clamp(16px,1.3vw,19px)] leading-relaxed text-ink/80">
-              Cuéntanos qué vende {CLIENT.name}, en qué barrio está el local y qué día podrías
-              recibirnos. Te decimos exactamente cómo funcionaría en tu caso.
+              {cierre.body}
             </p>
           </Reveal>
 
@@ -55,7 +61,7 @@ export default function Cierre() {
             <div className="mt-12 flex flex-wrap items-center gap-4">
               <Magnetic>
                 <a
-                  href={WA_MAIN}
+                  href={waMain}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-3 bg-ink px-8 py-5 text-[16px] font-bold text-volt transition-colors hover:bg-smoke hover:text-ink"
@@ -65,9 +71,7 @@ export default function Cierre() {
                 </a>
               </Magnetic>
               <a
-                href={wa(
-                  `Hola Kuadra, somos ${CLIENT.name}. Queremos agendar la jornada de grabación.`,
-                )}
+                href={agendar}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 border border-ink/40 px-8 py-5 text-[16px] text-ink transition-colors hover:border-ink hover:bg-ink hover:text-volt"
@@ -80,10 +84,10 @@ export default function Cierre() {
           <Reveal delay={0.4}>
             <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-ink/25 pt-10 md:grid-cols-4">
               {[
-                { k: 'Preparada para', v: CLIENT.name },
-                { k: 'Vigencia', v: CLIENT.validity },
+                { k: 'Preparada para', v: client.name },
+                { k: 'Vigencia', v: client.validity },
                 { k: 'Canal', v: 'WhatsApp · mismo día hábil' },
-                { k: 'Ref', v: CLIENT.ref },
+                { k: 'Ref', v: client.ref },
               ].map((r) => (
                 <div key={r.k}>
                   <dt className="u-label text-ink/60">{r.k}</dt>

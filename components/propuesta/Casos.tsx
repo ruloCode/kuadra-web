@@ -47,15 +47,6 @@ export default function Casos() {
               </div>
 
               <p className="mt-7 max-w-[48ch] text-[15px] leading-relaxed text-smoke/70">{c.summary}</p>
-
-              <a
-                href={c.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="u-label mt-8 inline-flex w-fit items-center gap-2 border border-line px-5 py-3 text-smoke transition-colors group-hover:border-volt hover:bg-volt hover:text-ink"
-              >
-                Ver la cuenta ↗
-              </a>
             </article>
           </Reveal>
         ))}

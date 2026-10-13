@@ -5,13 +5,13 @@ import Link from 'next/link'
 import { motion, useScroll, useSpring } from 'motion/react'
 import Magnetic from '../ui/Magnetic'
 import Wordmark from '../ui/Wordmark'
-import { CLIENT, WA_MAIN } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
 const LINKS = [
   { href: '#resultados', label: 'Resultados' },
   { href: '#casos', label: 'Casos' },
   { href: '#metodo', label: 'Método' },
-  { href: '#planes', label: 'Planes' },
+  { href: '#planes', label: 'Oferta' },
 ]
 
 /**
@@ -19,6 +19,7 @@ const LINKS = [
  * reading-progress rule along the bottom edge that fills as you scroll.
  */
 export default function PropNav() {
+  const { client, waMain } = usePropuesta()
   const [scrolled, setScrolled] = useState(false)
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 26, mass: 0.3 })
@@ -42,7 +43,7 @@ export default function PropNav() {
           <span className="u-label hidden items-center gap-3 text-signal sm:flex">
             <span className="h-px w-5 bg-line" />
             Propuesta
-            <span className="hidden text-smoke/70 lg:inline">· {CLIENT.name}</span>
+            <span className="hidden text-smoke/70 lg:inline">· {client.name}</span>
           </span>
         </Link>
 
@@ -61,7 +62,7 @@ export default function PropNav() {
 
         <Magnetic>
           <a
-            href={WA_MAIN}
+            href={waMain}
             target="_blank"
             rel="noopener noreferrer"
             className="u-label inline-flex items-center gap-2 bg-volt px-4 py-3 text-ink transition-colors hover:bg-smoke sm:px-5"

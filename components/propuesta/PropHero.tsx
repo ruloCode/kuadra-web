@@ -6,16 +6,17 @@ import SplitLines from '../ui/SplitLines'
 import Magnetic from '../ui/Magnetic'
 import Marquee from '../ui/Marquee'
 import Hud from './Hud'
-import { CLIENT, TICKER, WA_MAIN } from '@/lib/propuesta'
-
-const META = [
-  { k: 'Preparada para', v: CLIENT.name },
-  { k: 'Fecha', v: CLIENT.date },
-  { k: 'Vigencia', v: CLIENT.validity },
-  { k: 'Ref', v: CLIENT.ref },
-]
+import { usePropuesta } from './PropuestaContext'
 
 export default function PropHero() {
+  const { client, hero, ticker, waMain, plans } = usePropuesta()
+  const META = [
+    { k: 'Preparada para', v: client.name },
+    { k: 'Fecha', v: client.date },
+    { k: 'Vigencia', v: client.validity },
+    { k: 'Ref', v: client.ref },
+  ]
+  const planCta = plans.length === 1 ? 'Ver la oferta' : 'Ver planes'
   const ref = useRef<HTMLElement>(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -33,7 +34,7 @@ export default function PropHero() {
       id="top"
       className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden pt-28"
     >
-      <Hud progress={scrollYProgress} ghostX={ghostX} ghostOpacity={ghostOpacity} />
+      <Hud progress={scrollYProgress} ghostX={ghostX} ghostOpacity={ghostOpacity} ghost={hero.ghost} />
 
       <motion.div
         className="relative z-10 u-gutter flex flex-1 flex-col justify-center py-10"
@@ -45,20 +46,18 @@ export default function PropHero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          <span className="u-label text-volt">Propuesta de contenido</span>
+          <span className="u-label text-volt">{hero.kicker}</span>
           <span className="h-px w-8 bg-line sm:w-16" />
           <span className="u-label text-signal">
-            {CLIENT.name} · {CLIENT.city}
+            {client.name}
+            {client.instagram ? ` · ${client.instagram}` : ''}
+            {client.city ? ` · ${client.city}` : ''}
+            {client.address ? ` · ${client.address}` : ''}
           </span>
         </motion.div>
 
         <h1 className="u-display max-w-[22ch] text-[clamp(40px,7vw,104px)] text-smoke">
-          <SplitLines
-            lines={['Nativos para Nativos', 'se ve mejor de lo que', 'se ve en Instagram.']}
-            accent={[2]}
-            delay={0.25}
-            stagger={0.1}
-          />
+          <SplitLines lines={hero.lines} accent={hero.accent} delay={0.25} stagger={0.1} />
         </h1>
 
         <motion.p
@@ -67,8 +66,7 @@ export default function PropHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
         >
-          Un día de grabación en tu local. Doce piezas listas para todo el mes. Y cada guion
-          decidido con datos, no con intuición.
+          {hero.lede}
         </motion.p>
 
         <motion.div
@@ -82,7 +80,7 @@ export default function PropHero() {
               href="#planes"
               className="group inline-flex items-center gap-3 bg-volt px-7 py-4 text-[15px] font-bold text-ink transition-colors hover:bg-smoke"
             >
-              Ver planes
+              {planCta}
               <span className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
             </a>
           </Magnetic>
@@ -94,7 +92,7 @@ export default function PropHero() {
             <span className="u-tabular text-signal transition-colors group-hover:text-volt">192K</span>
           </a>
           <a
-            href={WA_MAIN}
+            href={waMain}
             target="_blank"
             rel="noopener noreferrer"
             className="u-label hidden items-center gap-2 text-signal transition-colors hover:text-volt sm:inline-flex"
@@ -132,7 +130,7 @@ export default function PropHero() {
         </div>
         <div className="u-rule border-b border-line py-4">
           <Marquee duration={34}>
-            {TICKER.map((t, i) => (
+            {ticker.map((t, i) => (
               <span key={i} className="flex items-center">
                 <span className="u-display whitespace-nowrap px-6 text-[clamp(15px,1.4vw,20px)] tracking-[0.02em] text-smoke/85">
                   {t}
