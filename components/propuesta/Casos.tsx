@@ -1,8 +1,13 @@
+'use client'
+
 import Reveal from '../ui/Reveal'
 import SplitLines from '../ui/SplitLines'
-import { CASES } from '@/lib/propuesta'
+import { CASES, CASOS_DEFAULT } from '@/lib/propuesta'
+import { usePropuesta } from './PropuestaContext'
 
 export default function Casos() {
+  const { lines, accent, lede } = usePropuesta().casos ?? CASOS_DEFAULT
+
   return (
     <section id="casos" className="scroll-mt-20 u-gutter pb-16 sm:pb-24 lg:pb-32">
       <div className="mb-12 flex flex-col justify-between gap-8 border-b border-line pb-10 lg:flex-row lg:items-end">
@@ -14,13 +19,12 @@ export default function Casos() {
             </span>
           </Reveal>
           <h2 className="u-display mt-6 max-w-[14ch] text-[clamp(36px,6vw,88px)] text-smoke">
-            <SplitLines lines={['Negocios que ya', 'se ven como', 'se merecen.']} accent={[2]} />
+            <SplitLines lines={lines} accent={accent} />
           </h2>
         </div>
         <Reveal delay={0.12}>
           <p className="max-w-[36ch] text-[15px] leading-relaxed text-smoke/70">
-            Cuentas locales, en Bogotá, con el mismo formato que te proponemos: un rodaje al mes
-            y medición semanal.
+            {lede}
           </p>
         </Reveal>
       </div>

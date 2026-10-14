@@ -84,6 +84,8 @@ export type ProposalCopy = {
   cupos?: { taken: number; total: number; body: string }
   arranque?: Step[]
   finePrint?: string
+  /** Header of the shared proof section. Falls back to CASOS_DEFAULT. */
+  casos?: { lines: string[]; accent: number[]; lede: string }
   /** Shorter page: less copy, more motion. Used for clients who skim. */
   compact?: boolean
 }
@@ -115,6 +117,12 @@ export const KPIS = [
     sub: 'Un contenido, más de cien mil personas',
   },
 ] as const
+
+export const CASOS_DEFAULT = {
+  lines: ['Negocios que ya', 'se ven como', 'se merecen.'],
+  accent: [2],
+  lede: 'Cuentas locales, en Bogotá, con el mismo formato que te proponemos: un rodaje al mes y medición semanal.',
+}
 
 export type CaseKey = 'bambu' | 'clandestine'
 
@@ -490,6 +498,11 @@ export const AUTOSANDO: ProposalCopy = {
       meta: '7 días hábiles',
     },
   ],
+  casos: {
+    lines: ['Otros negocios,', 'el mismo método,', 'resultados medidos.'],
+    accent: [2],
+    lede: 'Dos cuentas locales en Bogotá, trabajadas con el mismo formato que te proponemos para el concesionario: un rodaje al mes y medición semanal.',
+  },
   finePrint:
     'El plan se contrata por un mínimo de tres meses y continúa mes a mes, con terminación mediante aviso escrito de quince días. Propuesta válida hasta agotar los 10 cupos. Valores en pesos colombianos.',
   cierre: {
