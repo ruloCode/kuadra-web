@@ -112,6 +112,27 @@ export type PaymentRow = {
   created_at: string
 }
 
+/** Una propuesta pública con comentarios abiertos. */
+export type ProposalRoomRow = {
+  slug: string
+  client_name: string
+  open: boolean
+  created_at: string
+}
+
+export type FeedbackKind = 'comment' | 'approve' | 'unapprove'
+
+/** Lo que el cliente deja en una propuesta: un comentario o una (des)aprobación. */
+export type ProposalFeedbackRow = {
+  id: number
+  room: string
+  piece: string
+  kind: FeedbackKind
+  author: string
+  body: string | null
+  created_at: string
+}
+
 /** Columnas que la base rellena sola y nunca se envían en un insert. */
 type Generated = 'id' | 'created_at'
 
@@ -167,6 +188,14 @@ export type Database = {
         PaymentRow,
         'amount' | 'status' | 'paid_date' | 'invoice' | 'receipt'
       >
+      proposal_rooms: {
+        Row: ProposalRoomRow
+        Insert: Omit<ProposalRoomRow, 'created_at' | 'open'> &
+          Partial<Pick<ProposalRoomRow, 'created_at' | 'open'>>
+        Update: Partial<ProposalRoomRow>
+        Relationships: []
+      }
+      proposal_feedback: TableOf<ProposalFeedbackRow, 'body'>
     }
     Views: { [_ in never]: never }
     Functions: {
@@ -179,6 +208,22 @@ export type Database = {
       mark_published: {
         Args: { p_piece_id: number; p_published: boolean }
         Returns: undefined
+      }
+      /** Lo que hay en una sala de propuesta, en orden. Abierta a anon. */
+      proposal_feedback_list: {
+        Args: { p_room: string }
+        Returns: ProposalFeedbackRow[]
+      }
+      /** Deja un comentario o (des)aprueba una pieza. Abierta a anon. */
+      proposal_feedback_add: {
+        Args: {
+          p_room: string
+          p_piece: string
+          p_kind: FeedbackKind
+          p_author: string
+          p_body?: string | null
+        }
+        Returns: ProposalFeedbackRow
       }
     }
     Enums: { [_ in never]: never }
